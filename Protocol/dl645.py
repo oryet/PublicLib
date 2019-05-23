@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import configparser
+from PublicLib.public import calcCheckSum
 
 # 645报文各元素的位置
 POS_64507_HEAD = 0
@@ -13,13 +14,6 @@ POS_64507_DATA = 20  # 10
 # 645报文最小长度
 MIN_LEN_645FRAME = 24  # 12
 
-
-# 校验计算函数
-def calcCheckSum(frame):
-    checkSum = 0
-    for i in range(0, len(frame), 2):
-        checkSum += int(frame[i:i + 2], 16)
-    return str(hex(checkSum))
 
 
 # 645解帧函数

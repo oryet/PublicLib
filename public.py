@@ -33,3 +33,26 @@ def _strReverse(value):
     for i in range(0, len(value), 2):
         s = value[i:i + 2] + s
     return s
+
+# ByteToHex的转换
+def ByteToHex( bins ):
+    """
+    Convert a byte string to it's hex string representation e.g. for output.
+    """
+    return ''.join( [ "%02X" % x for x in bins ] ).strip()
+
+# HexToByte的转换
+def HexToByte( hexStr ):
+    """
+    Convert a string hex byte values into a byte string. The Hex Byte values may
+    or may not be space separated.
+    """
+    return bytes.fromhex(hexStr)
+
+# 校验计算函数
+def calcCheckSum(frame):
+    checkSum = 0
+    for i in range(0, len(frame), 2):
+        checkSum += int(frame[i:i + 2], 16)
+    return str(hex(checkSum))[-2:]
+
