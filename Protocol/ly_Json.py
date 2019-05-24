@@ -40,6 +40,11 @@ def JsonDealFrame(recvframe, senddata, answer):
         json_frame = json_frame["recvData"]
 
     if json_frame is not None and json_senddata is not None:
+        if isinstance(json_frame, str):
+            json_frame = json.loads(json_frame)
+        if isinstance(json_senddata, str):
+            json_senddata = json.loads(json_senddata)
+
         if json_senddata["Cmd"] == json_frame["Cmd"]:
             if json_senddata["DataValue"].keys() ==  json_frame["DataValue"].keys():
                 value = list(json_frame["DataValue"].values())[0]
