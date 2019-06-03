@@ -1,3 +1,6 @@
+import json
+import logging
+
 # CRC16/IBM x16 + x15 + x2 + 1
 def crc16str(base, x, invert):
     a = base
@@ -55,4 +58,24 @@ def calcCheckSum(frame):
     for i in range(0, len(frame), 2):
         checkSum += int(frame[i:i + 2], 16)
     return str(hex(checkSum))[-2:]
+
+
+# 载入日志配置文件
+def loggingConfig(logconf):
+    logging.config.fileConfig(logconf)
+    logger = logging.getLogger('main')
+    logger.info('Logging main Start')
+
+
+# 载入Json格式配置文件
+def loadDefaultSettings(configfile):
+    try:
+        jsonConfigFile = open(configfile)
+        defaultJsonConfig = json.load(jsonConfigFile)
+        print(defaultJsonConfig)
+    finally:
+        if jsonConfigFile:
+            jsonConfigFile.close()
+            return defaultJsonConfig
+
 

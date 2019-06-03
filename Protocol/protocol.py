@@ -77,7 +77,7 @@ def prtlDealFrame(type, data, senddata, answer):
     if type == PRTL_LYJSON:
         return jsonframe.JsonDealFrame(data, senddata, answer)
     else:
-        pass
+        return  -1, None
 
 
 # 协议组帧

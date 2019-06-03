@@ -35,6 +35,11 @@ def JsonDealFrame(recvframe, senddata, answer):
     json_frame = recvframe # subStrToJson(recvframe)
     json_senddata = senddata # subStrToJson(senddata)
 
+    if isinstance(json_frame, dict) is False:
+        return -1, None
+    if isinstance(json_senddata, dict) is False:
+        return -1, None
+
     # 接收帧 去除头部结构
     if "recvData" in json_frame:
         json_frame = json_frame["recvData"]

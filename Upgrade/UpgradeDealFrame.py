@@ -28,6 +28,11 @@ def upgradeSendData(self):
 def upgradeDataProc(recv, self):
     if isinstance(recv, dict):
         data = recv
+        if 'ip' in data and 'port' in data:
+            self.uplist["ip"] = data["ip"]
+            self.uplist["port"] = data["port"]
+        if 'recvData' in data:
+            data = data["recvData"]
     elif isinstance(recv, str):
         data = jsonframe.subStrToJson(recv)
         if "ip" and "port" in data:
@@ -39,6 +44,8 @@ def upgradeDataProc(recv, self):
     else:
         return
 
+    if isinstance(data, str):
+        data = jsonframe.subStrToJson(data)
 
     if "04A00503" in data["DataValue"]:
         if data["DataValue"]["04A00503"][13:17] == "0001":
