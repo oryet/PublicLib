@@ -1,5 +1,6 @@
 import json
 import logging
+import logging.config
 
 # CRC16/IBM x16 + x15 + x2 + 1
 def crc16str(base, x, invert):
