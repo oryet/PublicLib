@@ -1,11 +1,10 @@
-import logging.config
 import queue
 import socketserver
-import threading
 import time
 from PublicLib.Socket.ConnManage import ConnManage
 from PublicLib.Protocol.prtl13761 import prtl3761
-import PublicLib.public as pub
+from PublicLib.MySqldb.Frame2Json import *
+
 
 q = queue.Queue()
 server = None
@@ -76,18 +75,21 @@ def SocketSend(n, data):
             except:
                 pass
 
-def ServerMonitor(qRecv):
+def ServerMonitor(qRecv, logger):
     while True:
         time.sleep(0.2)
         con.Live()
 
         while not q.empty():
             data = q.get()
-            if qRecv == None:
+            if qRecv == None: # qRecv未传递参数进来，仅保存日志
                 logger.info(data)
+                ip, port, jdata = frameforma(data)
+                processdata(ip, port, jdata)
+                print(jdata)
             else:
                 qRecv.put(data)
-            # print(data)
+            print(data)
 
 # 获取链接数量
 def GetLinkNum():
@@ -120,7 +122,10 @@ def SocketSendThread():
         if con.GetLinkNum() > 0:
             print("[1、获取在线列表， 2、发送给指定IP]")
             str = input("请输入需要执行的流程：\r\n")
-            n = int(str, 10)
+            try:
+                n = int(str, 10)
+            except:
+                continue
 
             if (n == 1): # 获取在线列表
                 iplist = con.GetIpList()

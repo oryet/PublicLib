@@ -50,8 +50,8 @@ class Json2db():
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM volt WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM volt"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM volt"
+        # sp.showdata(sql)
         db.close()
 
     # 电流
@@ -64,8 +64,8 @@ class Json2db():
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM volt WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM cur"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM cur"
+        # sp.showdata(sql)
         db.close()
 
     # 正向有功功率
@@ -73,13 +73,13 @@ class Json2db():
         db = pymysql.connect(self.ip, "root", "123456", self.dbname)
         sp = MySqlApi(db)
         addr = self.ip2addr(sp, ip)
-        sql = "INSERT INTO insq VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f)" % (
+        sql = "INSERT INTO insq VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f, %f)" % (
             addr, rectime, curvetime, insqsum, insqa, insqb, insqc)
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM volt WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM insq"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM insq"
+        # sp.showdata(sql)
         db.close()
 
     # 反向有功功率
@@ -87,13 +87,13 @@ class Json2db():
         db = pymysql.connect(self.ip, "root", "123456", self.dbname)
         sp = MySqlApi(db)
         addr = self.ip2addr(sp, ip)
-        sql = "INSERT INTO insp VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f)" % (
+        sql = "INSERT INTO insp VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f, %f)" % (
             addr, rectime, curvetime, inspsum, inspa, inspb, inspc)
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM volt WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM insp"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM insp"
+        # sp.showdata(sql)
         db.close()
 
     # 功率因素
@@ -101,13 +101,13 @@ class Json2db():
         db = pymysql.connect(self.ip, "root", "123456", self.dbname)
         sp = MySqlApi(db)
         addr = self.ip2addr(sp, ip)
-        sql = "INSERT INTO pwrf VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f)" % (
+        sql = "INSERT INTO pwrf VALUES (\'%s\', \'%s\', \'%s\', %f, %f, %f, %f)" % (
             addr, rectime, curvetime, pwrfsum, pwrfa, pwrfb, pwrfc)
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM volt WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM pwrf"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM pwrf"
+        # sp.showdata(sql)
         db.close()
 
     # 正向有功电能量
@@ -122,8 +122,8 @@ class Json2db():
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM poseng WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM poseng"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM poseng"
+        # sp.showdata(sql)
         db.close()
 
     # 反向有功电能量
@@ -138,8 +138,8 @@ class Json2db():
         ret = sp.execut(sql)
         # test print
         # sql = "SELECT * FROM negeng WHERE curvetime = \'%s\'" % (curvetime)
-        sql = "SELECT * FROM negeng"
-        sp.showdata(sql)
+        # sql = "SELECT * FROM negeng"
+        # sp.showdata(sql)
         db.close()
 
 
