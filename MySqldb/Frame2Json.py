@@ -9,7 +9,10 @@ def frameforma(data):
     if data['type'] == 'json':
         recv = data['recvData']
         jdata = re.sub('\'', '\"', recv)
-        data_json = json.loads(jdata)
+        try:
+            data_json = json.loads(jdata)
+        except:
+            None
         return data['ip'], data['port'], data_json
     else:
         return None, None, None
@@ -160,6 +163,3 @@ def processdata(ip, port, jdata):
         pass
 
 if __name__ == '__main__':
-    cuv = "1907290215#230.2#000.0#000.0#1907290220#230.4#000.0#000.0#1907290225#230.5#000.0#000.0"
-    le, ld = cuver2data(cuv)
-    print(le, ld)
