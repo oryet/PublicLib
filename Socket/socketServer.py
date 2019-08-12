@@ -85,12 +85,14 @@ def ServerMonitor(qRecv, logger):
             if qRecv == None: # qRecv未传递参数进来，仅保存日志
                 logger.info(data)
                 ip, port, jdata = frameforma(data)
-                if data != None:
-                    processdata(ip, port, jdata)
-                    # print(jdata)
+                if jdata != None:
+                    for jsondata in jdata:
+                        processdata(ip, port, jsondata)
+                        # print(ip, port, jsondata)
+                else:
+                    logger.warning("jdata err")
             else:
                 qRecv.put(data)
-                # print(data)
 
 # 获取链接数量
 def GetLinkNum():

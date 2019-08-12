@@ -6,16 +6,27 @@ import time
 
 
 def frameforma(data):
+    jdatalist = []
     if data['type'] == 'json':
         recv = data['recvData']
         jdata = re.sub('\'', '\"', recv)
-        try:
-            data_json = json.loads(jdata)
-        except:
-            None
-        return data['ip'], data['port'], data_json
+        # ´æÔÚÁ¬°ü
+        n = jdata.count("{\"Len\":")
+        end = 0
+        for i in range(n):
+            try:
+                start = end
+                end = jdata.find("{\"Len\":", start+1)
+                if end == -1:
+                    datatmp = jdata[start:]
+                else:
+                    datatmp = jdata[start:end]
+                jdatalist += [datatmp]
+            except:
+                jdatalist += [None]
+        return data['ip'], data['port'], jdatalist
     else:
-        return None, None, None
+        return None, None, jdatalist
 
 
 def datetimeformat(datetime):
@@ -163,3 +174,13 @@ def processdata(ip, port, jdata):
         pass
 
 if __name__ == '__main__':
+    # cuv = "1907290215#230.2#000.0#000.0#1907290220#230.4#000.0#000.0#1907290225#230.5#000.0#000.0"
+    # le, ld = cuver2data(cuv)
+    # print(le, ld)
+    cuv = {'ip': '221.178.127.231', 'port': '10301', 'type': 'json', 'recvData': "{'Len':'0099','Cmd':'Report','SN':'6140','DataTime':'190808122802','CRC':'FFFF','DataValue':{'02010100':'227.3'}}{'Len':'0380','Cmd':'Report','SN':'6141','DataTime':'190808123002','CRC':'FFFF','DataValue':{'061001FF':'1908081215#226.8#000.0#000.0#1908081220#227.3#000.0#000.0#1908081225#227.0#000.0#000.0','061002FF':'1908081215#000.039#000.000#000.000#1908081220#000.045#000.000#000.000#1908081225#000.036#000.000#000.000','06100901':'1908081215#000000.1645#1908081220#000000.1645#1908081225#000000.1645'}}{'Len':'0379','Cmd':'Report','SN':'6142','DataTime':'190808123102','CRC':'FFFF','DataValue':{'061003FF':'1908081220#00.0000#00.0000#00.0000#00.0000#1908081225#00.0000#00.0000#00.0000#00.0000#1908081230#00.0000#00.0000#00.0000#00.0000','061004FF':'1908081220#00.0000#00.0508#00.0000#00.0000#1908081225#00.0000#00.0508#00.0000#00.0000#1908081230#00.0000#00.0508#00.0000#00.0000','061005FF':'N'}}{'Len':'0101','Cmd':'Report','SN':'6143','DataTime':'190808123202','CRC':'FFFF','DataValue':{'02020100':'000.040'}}{'Len':'0099','Cmd':'Report','SN':'6144','DataTime':'190808123302','CRC':'FFFF','DataValue':{'02010100':'227.2'}}"}
+    ip, port, jdata = frameforma(cuv)
+    if len(jdata) > 0:
+        for data in jdata:
+            print(data)
+    else:
+        print("jdata err")
