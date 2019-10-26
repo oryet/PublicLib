@@ -17,7 +17,7 @@ class ACsampling():
         self.I = [0]*4
         self.A = [0] * 4
         self.U = [220]*3
-        self.Power = [[0] * 4, [0] * 4]
+        self.Power = [[0] * 4, [0] * 4]  # 总/A/B/C
 
     def vol(self):
         for i in range(3):
