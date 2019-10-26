@@ -61,6 +61,16 @@ def calcCheckSum(frame):
     return str(hex(checkSum))[-2:]
 
 
+# 校验计算函数
+def calcHexCheckSum(frame, en):
+    checkSum = 0
+    for i in range(len(frame)):
+        if en:
+            checkSum += (frame[i] + 0x33)
+        else:
+            checkSum += (frame[i])
+    return checkSum & 0xFF
+
 # 载入日志配置文件
 def loggingConfig(logconf):
     logging.config.fileConfig(logconf)
