@@ -47,7 +47,7 @@ def hex2str(hexdata, en):
     return s
 
 
-def dealframe(frame):
+def dl645_dealframe(frame):
     frame = frame.replace(' ', '')
     if len(frame) < MIN_LEN_645FRAME:
         return False, None
@@ -75,7 +75,10 @@ def dealframe(frame):
 
 
 # 十六进制 转 字符串 再 组帧
-def makeframe(dt):
+def dl645_makeframe(dt):
+    # datavalue 转换
+    dt['data'] += str2hex(dt['datavalue'], 0)
+
     # 计算长度
     dlen = len(dt['data'])
 
@@ -93,7 +96,7 @@ def makeframe(dt):
     return frame
 
 
-def read(dt, eng):
+def dl645_read(dt, eng):
     if len(dt['data']) < 4:
         return
 
@@ -102,84 +105,102 @@ def read(dt, eng):
     print(DI)
 
     if m == 0x00:
-        readenergy(DI, eng)
+        dt['datavalue'] = dl645_readenergy(DI, eng)
     elif m == 0x01:
-        readdemand()
+        dt['datavalue'] = dl645_readdemand()
     elif m == 0x02:
-        readins()
+        dt['datavalue'] = dl645_readins()
     elif m == 0x03:
-        readevent()
+        dt['datavalue'] = dl645_readevent()
     elif m == 0x04:
-        readpara()
+        dt['datavalue'] = dl645_readpara()
     elif m == 0x05:
-        readfre()
+        dt['datavalue'] = dl645_readfre()
     elif m == 0x06:
-        readcure()
+        dt['datavalue'] = dl645_readcure()
 
 
-def write():
+
+
+def dl645_write():
     pass
 
 
-def readaddr():
+def dl645_readaddr():
     pass
 
 
-def writeaddr():
+def dl645_writeaddr():
     pass
 
 
-def clearmeter():
+def dl645_clearmeter():
     pass
 
+# xxxxxx.xx 转 645
+def dl645_energydata2hex(e):
+    strhex = hex((int(e*100)))
+    strhex = strhex.replace('0x', '00000000')[-8:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
 
-def readenergy(DI, eng):
-    eng.eprint()
+
+
+def dl645_readenergy(DI, eng):
+    # eng.eprint()
+    # energy  [相位][类型][费率]
+
     if DI[2] == 0x01:  # (当前)正向有功总电能
-        a = eng.energy[eng.POSACT]
-        print(a)
+        e = eng.energy[0][0]
     elif DI[2] == 0x02:  # (当前)反向有功总电能
-        pass
+        e = eng.energy[0][1]
     elif DI[2] == 0x05:  # (当前)第一象限无功总电能
-        pass
+        e = eng.energy[0][2]
     elif DI[2] == 0x06:  # (当前)第二象限无功总电能
-        pass
+        e = eng.energy[0][3]
     elif DI[2] == 0x07:  # (当前)第三象限无功总电能
-        pass
+        e = eng.energy[0][4]
     elif DI[2] == 0x08:  # (当前)第四象限无功总电能
-        pass
+        e = eng.energy[0][5]
+
+    strdata = ''
+    for i in range(eng.RATE_MAX_NUM):
+        strdata += dl645_energydata2hex(e[i])
+    return strdata
 
 
-def readdemand():
+def dl645_readdemand():
     pass
 
 
-def readins():
+def dl645_readins():
     pass
 
 
-def readevent():
+def dl645_readevent():
     pass
 
 
-def readpara():
+def dl645_readpara():
     pass
 
 
-def readfre():
+def dl645_readfre():
     pass
 
 
-def readcure():
+def dl645_readcure():
     pass
 
 
 if __name__ == '__main__':
     mtr = meter485()
     mtr.addmeter(1)
+    mtr.run(3600)
+    mtr.run(3600)
 
-    frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 32 34 33 4a 16'
-    ret, dt = dealframe(frame)
+    frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 32 35 33 4b 16'
+    ret, dt = dl645_dealframe(frame)
     print(ret, dt)
 
     if ret:
@@ -188,7 +209,7 @@ if __name__ == '__main__':
 
         eng = mtr.readenergy(index)
         print(eng)
-        read(dt, eng)
+        dl645_read(dt, eng)
 
-        fe = makeframe(dt)
+        fe = dl645_makeframe(dt)
         print(fe)
