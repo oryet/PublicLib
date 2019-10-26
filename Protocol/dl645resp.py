@@ -2,7 +2,7 @@ import sys
 
 sys.path.append('../')
 from PublicLib.public import calcCheckSum
-from TLY2215simulation.devMeter485 import meter485
+from MeterReadingSimulation.devMeter485 import meter485
 import PublicLib.public as pfun
 
 # 645报文各元素的位置

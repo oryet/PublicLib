@@ -89,7 +89,7 @@ def ServerMonitor(qRecv, logger):
                     for jsondata in jdata:
                         if jsondata is not None:
                             processdata(ip, port, jsondata)
-                            logger.warning(jsondata)
+                            # logger.warning(jsondata)
                             # print(ip, port, jsondata)
                 else:
                     logger.warning("jdata err")
