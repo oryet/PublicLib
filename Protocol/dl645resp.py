@@ -2,7 +2,6 @@ import sys
 
 sys.path.append('../')
 from PublicLib.public import calcCheckSum
-from MeterReadingSimulation.devMeter485 import meter485
 import PublicLib.public as pfun
 
 # 645报文各元素的位置
@@ -93,7 +92,12 @@ def dl645_makeframe(dt):
     dt['data'] = hex2str(dt['data'], 1)  # hex
 
     frame = '68' + dt['addr'] + '68' + dt['ctrl'] + dt['dlen'] + dt['data'] + dt['cs'] + '16'
-    return frame
+
+    # 字节间增加空格
+    framespace = ''
+    for i in range (0, len(frame), 2):
+        framespace += frame[i:i+2] + ' '
+    return framespace
 
 
 def dl645_read(dt, eng):
@@ -194,6 +198,8 @@ def dl645_readcure():
 
 
 if __name__ == '__main__':
+    from MeterReadingSimulation.devMeter485 import meter485
+
     mtr = meter485()
     mtr.addmeter(1)
     mtr.run(3600)
