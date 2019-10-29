@@ -62,21 +62,27 @@ def dl645_dealframe(frame):
                 checkSum = checkSum.upper()
                 if checkSum == frame[frameLen + 2:frameLen + 4] and \
                                 frame[frameLen + 4:frameLen + 6] == '16':
-                    addr = frame[i + POS_64507_ADDR:i + POS_64507_ADDR + 12]
+                    addr = frame[i + POS_64507_ADDR:i + POS_64507_ADDR + 12].upper()
                     dt['addr'] = pfun._strReverse(addr)
                     # dt['ctrl'] = frame[i + POS_64507_CTRL:i + POS_64507_CTRL + 2]
                     dt['ctrl'] = int(frame[i + POS_64507_CTRL:i + POS_64507_CTRL + 2], 16)
                     # dt['data'] = frame[i + POS_64507_DATA:i + POS_64507_DATA + dataLen]
                     datastr = frame[i + POS_64507_DATA:i + POS_64507_DATA + dataLen]
                     dt['data'] = str2hex(datastr, 1)
-                    return True, dt
+
+                    if dt['ctrl'] & 0x80 == 0:  # 只响应抄读帧
+                        return True, dt
     return False, None
 
 
 # 十六进制 转 字符串 再 组帧
 def dl645_makeframe(dt):
     # datavalue 转换
-    dt['data'] += str2hex(dt['datavalue'], 0)
+    if 'datavalue' in dt:
+        dt['data'] += str2hex(dt['datavalue'], 0)
+    else:
+        dt['data'] = [0x02]
+        dt['ctrl'] |= 0xC0
 
     # 计算长度
     dlen = len(dt['data'])
