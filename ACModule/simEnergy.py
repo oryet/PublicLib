@@ -16,7 +16,7 @@ RATE_DEFT_NUM = 3 + 1
 RATE_MAX_NUM = 4 + 1
 
 class energy():
-    def __init__(self):
+    def __init__(self, phaseNum=1):
         self.POS = 0
         self.NEG = 1
 
@@ -31,6 +31,10 @@ class energy():
         self.PhaseA = 1
         self.PhaseB = 2
         self.PhaseC = 3
+        if phaseNum == 1 or phaseNum == 3:
+            self.phaseNum = phaseNum
+        else:
+            self.phaseNum = 3 # 默认三相表
 
         self.RATE_FUN = 1  # 默认记录在三费率
         self.RATE_DEFT_NUM = 3 + 1
@@ -39,11 +43,11 @@ class energy():
         self.energy = [[[0]*9 for i in range(6) ] for i in range(4)]  # 8费率 6种组合 3个相位
 
     def rate(self):
-        return random.randint(1, 4)
+        return random.randint(1, self.phaseNum + 1)
 
     def run(self, ac, t):
         n = self.rate()
-        for i in range(1,4):
+        for i in range(1,self.phaseNum + 1):
             if ac.Power[POS][i] >= 0:
                 d = ac.Power[POS][i] * t / 3600
                 self.energy[i][POSACT][n] += d# 正向有功
@@ -89,7 +93,7 @@ class energy():
 
 
 if __name__ == '__main__':
-    eng = energy()
+    eng = energy(3)
     ac = ACsampling()
     for i in range(10):
         ac.run()

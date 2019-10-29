@@ -149,8 +149,8 @@ def dl645_clearmeter():
 
 # xxxxxx.xx 转 645
 def dl645_energydata2hex(e):
-    strhex = hex((int(e*100)))
-    strhex = strhex.replace('0x', '00000000')[-8:]
+    strhex = '00000000' + str((int(e*100)))
+    strhex = strhex[-8:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
