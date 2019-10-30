@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 
 volfluctu = 20
 curfluctu = 20
@@ -8,39 +9,42 @@ PhaseB = 1
 PhaseC = 2
 PhaseTotal = 3
 
-POS = 0
-NEG = 1
-
+U = 0
+I = 1
+A = 2
+P = 3
+Q = 4
 
 class ACsampling():
     def __init__(self):
-        self.I = [0]*4
-        self.A = [0] * 4
-        self.U = [220]*3
-        self.Power = [[0] * 4, [0] * 4]  # 总/A/B/C
+        # self.I = [0]*4
+        # self.A = [0] * 4
+        # self.U = [220]*3
+        # self.Power = [[0] * 4, [0] * 4]  # 总/A/B/C
+        self.ac = np.zeros([5, 4], dtype=float)  # 总/A/B/C   U/I/A/P/Q
 
     def vol(self):
         for i in range(3):
-            self.U[i] = 220 + random.uniform(0, volfluctu)
+            self.ac[U][i] = 220 + random.uniform(0, volfluctu)
 
     def cur(self):
         for i in range(3):
-            self.I[i] = random.uniform(0, curfluctu)
-            self.I[PhaseTotal] += self.I[i]
+            self.ac[I][i] = random.uniform(0, curfluctu)
+            self.ac[I][PhaseTotal] += self.ac[I][i]
 
     def angle(self):
         for i in range(3):
-            self.A[i] = random.randint(0, 360)
+            self.ac[A][i] = random.randint(0, 360)
 
     def power(self):
-        self.Power[POS][PhaseTotal] = 0
-        self.Power[NEG][PhaseTotal] = 0
+        self.ac[P][PhaseTotal] = 0
+        self.ac[Q][PhaseTotal] = 0
         for i in range(3):
-            self.Power[POS][i] = self.U[i] * self.I[i] * math.cos(math.radians(self.A[i])) * 1e-4
-            self.Power[POS][PhaseTotal] += self.Power[POS][i]
+            self.ac[P][i] = self.ac[U][i] * self.ac[I][i] * math.cos(math.radians(self.ac[A][i])) * 1e-4
+            self.ac[P][PhaseTotal] += self.ac[P][i]
 
-            self.Power[NEG][i] = self.U[i] * self.I[i] * math.sin(math.radians(self.A[i])) * 1e-4
-            self.Power[NEG][PhaseTotal] += self.Power[NEG][i]
+            self.ac[Q][i] = self.ac[U][i] * self.ac[I][i] * math.sin(math.radians(self.ac[A][i])) * 1e-4
+            self.ac[Q][PhaseTotal] += self.ac[Q][i]
 
     def run(self):
         self.vol()
@@ -49,19 +53,17 @@ class ACsampling():
         self.power()
 
     def printAC(self):
-        print("Ua:%.1f,Ub:%.1f,Uc:%.1f" % (self.U[PhaseA], self.U[PhaseB], self.U[PhaseC]))
-        print("Ia:%.4f,Ib:%.4f,Ic:%.4f,Iabc:%.4f" % (self.I[PhaseA], self.I[PhaseB], self.I[PhaseC], self.I[PhaseTotal]))
-        print("Pacta:%.2f,Pactb:%.2f,Pactc:%.2f,Pactabc:%.2f" % (self.Power[POS][PhaseA], self.Power[POS][PhaseB], self.Power[POS][PhaseC], self.Power[POS][PhaseTotal]))
-        print("Preaa:%.2f,Preab:%.2f,Preac:%.2f,Preaabc:%.2f" % (self.Power[NEG][PhaseA], self.Power[NEG][PhaseB], self.Power[NEG][PhaseC], self.Power[NEG][PhaseTotal]))
+        print("Ua:%.1f,Ub:%.1f,Uc:%.1f" % (self.ac[U][PhaseA], self.ac[U][PhaseB], self.ac[U][PhaseC]))
+        print("Ia:%.4f,Ib:%.4f,Ic:%.4f,Iabc:%.4f" % (self.ac[I][PhaseA], self.ac[I][PhaseB], self.ac[I][PhaseC], self.ac[I][PhaseTotal]))
+        print("Pa:%.2f,Pb:%.2f,Pc:%.2f,Pabc:%.2f" % (self.ac[P][PhaseA], self.ac[P][PhaseB], self.ac[P][PhaseC], self.ac[P][PhaseTotal]))
+        print("Qa:%.2f,Qb:%.2f,Qc:%.2f,Qabc:%.2f" % (self.ac[Q][PhaseA], self.ac[Q][PhaseB], self.ac[Q][PhaseC], self.ac[Q][PhaseTotal]))
         print("\r\n")
 
 
 if __name__ == '__main__':
     ac = ACsampling()
     ac.printAC()
-    ac.vol()
-    ac.cur()
-    ac.power()
+    ac.run()
     ac.printAC()
 
     '''

@@ -48,39 +48,39 @@ class energy():
     def run(self, ac, t):
         n = self.rate()
         for i in range(1,self.phaseNum + 1):
-            if ac.Power[POS][i] >= 0:
-                d = ac.Power[POS][i] * t / 3600
-                self.energy[i][POSACT][n] += d# 正向有功
+            if ac.ac[2][i] >= 0:
+                d = ac.ac[3][i] * t / 3600
+                self.energy[i][POSACT][n] += d  # 正向有功
                 self.energy[0][POSACT][n] += d
                 self.energy[i][POSACT][0] += d
                 self.energy[0][POSACT][0] += d
             else:
-                d = abs(ac.Power[POS][i] * t / 3600)
+                d = abs(ac.ac[3][i] * t / 3600)
                 self.energy[i][NEGACT][n] += d
                 self.energy[0][NEGACT][n] += d
                 self.energy[i][NEGACT][0] += d
                 self.energy[0][NEGACT][0] += d
 
-            if 0 <= ac.A[i] <= 90:
-                d = abs(ac.Power[NEG][i] * t / 3600)
+            if 0 <= ac.ac[2][i] <= 90:
+                d = abs(ac.ac[4][i] * t / 3600)
                 self.energy[i][QUADRE1][n] += d
                 self.energy[0][QUADRE1][n] += d
                 self.energy[i][QUADRE1][0] += d
                 self.energy[0][QUADRE1][0] += d
-            elif 90 < ac.A[i] <= 180:
-                d = abs(ac.Power[NEG][i] * t / 3600)
+            elif 90 < ac.ac[2][i] <= 180:
+                d = abs(ac.ac[4][i] * t / 3600)
                 self.energy[i][QUADRE2][n] += d
                 self.energy[0][QUADRE2][n] += d
                 self.energy[i][QUADRE2][0] += d
                 self.energy[0][QUADRE2][0] += d
-            elif 180 < ac.A[i] <= 270:
-                d = abs(ac.Power[NEG][i] * t / 3600)
+            elif 180 < ac.ac[2][i] <= 270:
+                d = abs(ac.ac[4][i] * t / 3600)
                 self.energy[i][QUADRE3][n] += d
                 self.energy[0][QUADRE3][n] += d
                 self.energy[i][QUADRE3][0] += d
                 self.energy[0][QUADRE3][0] += d
-            elif 270 < ac.A[i] <= 360:
-                d = abs(ac.Power[NEG][i] * t / 3600)
+            elif 270 < ac.ac[2][i] <= 360:
+                d = abs(ac.ac[4][i] * t / 3600)
                 self.energy[i][QUADRE4][n] += d
                 self.energy[0][QUADRE4][n] += d
                 self.energy[i][QUADRE4][0] += d

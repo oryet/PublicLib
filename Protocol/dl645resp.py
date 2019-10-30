@@ -78,7 +78,7 @@ def dl645_dealframe(frame):
 # 十六进制 转 字符串 再 组帧
 def dl645_makeframe(dt):
     # datavalue 转换
-    if 'datavalue' in dt:
+    if 'datavalue' in dt and dt['datavalue'] != None:
         dt['data'] += str2hex(dt['datavalue'], 0)
     else:
         dt['data'] = [0x02]
@@ -160,20 +160,20 @@ def dl645_readenergy(DI, eng):
     # energy  [相位][类型][费率]
 
     if DI[2] == 0x01:  # (当前)正向有功总电能
-        e = eng.energy[0][0]
+        e = eng[0][0]
     elif DI[2] == 0x02:  # (当前)反向有功总电能
-        e = eng.energy[0][1]
+        e = eng[0][1]
     elif DI[2] == 0x05:  # (当前)第一象限无功总电能
-        e = eng.energy[0][2]
+        e = eng[0][2]
     elif DI[2] == 0x06:  # (当前)第二象限无功总电能
-        e = eng.energy[0][3]
+        e = eng[0][3]
     elif DI[2] == 0x07:  # (当前)第三象限无功总电能
-        e = eng.energy[0][4]
+        e = eng[0][4]
     elif DI[2] == 0x08:  # (当前)第四象限无功总电能
-        e = eng.energy[0][5]
+        e = eng[0][5]
 
     strdata = ''
-    for i in range(eng.RATE_MAX_NUM):
+    for i in range(len(e)):
         strdata += dl645_energydata2hex(e[i])
     return strdata
 
@@ -211,6 +211,7 @@ if __name__ == '__main__':
     mtr.run(3600)
 
     frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 32 35 33 4b 16'
+    # frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 33 37 35 50 16'
     ret, dt = dl645_dealframe(frame)
     print(ret, dt)
 
@@ -220,7 +221,7 @@ if __name__ == '__main__':
 
         eng = mtr.readenergy(index)
         print(eng)
-        dl645_read(dt, eng)
+        dl645_read(dt, eng.energy)
 
         fe = dl645_makeframe(dt)
         print(fe)
