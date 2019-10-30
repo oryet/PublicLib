@@ -87,17 +87,16 @@ def dl645_makeframe(dt):
     # 计算长度
     dlen = len(dt['data'])
 
-    # data区组帧
-    if dlen > 0:
-        cs = pfun.calcHexCheckSum(dt['data'], 1)
-        dt['cs'] = hex2str([cs], 0)
-
     dt['dlen'] = hex2str([dlen], 0)
     dt['ctrl'] = hex2str([dt['ctrl'] | 0x80], 0)
     dt['addr'] = pfun._strReverse(dt['addr'])
     dt['data'] = hex2str(dt['data'], 1)  # hex
 
-    frame = '68' + dt['addr'] + '68' + dt['ctrl'] + dt['dlen'] + dt['data'] + dt['cs'] + '16'
+    frame = '68' + dt['addr'] + '68' + dt['ctrl'] + dt['dlen'] + dt['data'] # + dt['cs'] + '16'
+
+    # 计算CRC
+    dt['cs'] = pfun.calcCheckSum(frame)
+    frame += dt['cs'] + '16'
 
     # 字节间增加空格
     framespace = ''

@@ -70,7 +70,7 @@ class simSerial(threading.Thread):
         ret = False
         try:
             # 打开串口，并得到串口对象
-            ser = serial.Serial(portx, bps, 8, 'N', 1, timeout=timeout)
+            ser = serial.Serial(portx, bps, 8, 'E', 1, timeout=timeout)
             # 判断是否打开成功
             if (ser.is_open):
                 ret = True
