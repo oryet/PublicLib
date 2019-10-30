@@ -24,9 +24,15 @@ def str2hex(strdata, en):
     for j in range(0, len(strdata), 2):
         s = strdata[j:j + 2]
         if en:
-            s = int(s, 16) - 0x33
+            try:
+                s = int(s, 16) - 0x33
+            except:
+                pass
         else:
-            s = int(s, 16)
+            try:
+                s = int(s, 16)
+            except:
+                pass
         data += [s]
     return data
 
@@ -36,9 +42,15 @@ def hex2str(hexdata, en):
     s = ''
     for j in range(len(hexdata)):
         if en:
-            ss = hex(hexdata[j] + 0x33)
+            try:
+                ss = hex(hexdata[j] + 0x33)
+            except:
+                pass
         else:
-            ss = hex(hexdata[j])
+            try:
+                ss = hex(hexdata[j])
+            except:
+                pass
         ss = ss.replace('0x', '00')
         ss = ss[-2:]
         # s += hex(hexdata[j]).replace('0x', '00')[-2:0]
