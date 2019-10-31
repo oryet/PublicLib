@@ -33,6 +33,7 @@ class ACsampling():
                 self.ac[U][i] = 220 + random.uniform(0, volfluctu)
 
     def cur(self):
+        self.ac[I] = 0
         for i in range(3):
             if TEST_EN:
                 self.ac[I][i] = curfluctu
@@ -48,8 +49,8 @@ class ACsampling():
                 self.ac[A][i] = random.randint(0, 360)
 
     def power(self):
-        self.ac[P][PhaseTotal] = 0
-        self.ac[Q][PhaseTotal] = 0
+        self.ac[P] = 0
+        self.ac[Q] = 0
         for i in range(3):
             self.ac[P][i] = self.ac[U][i] * self.ac[I][i] * math.cos(math.radians(self.ac[A][i])) * 1e-3
             self.ac[P][PhaseTotal] += self.ac[P][i]
