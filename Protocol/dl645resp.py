@@ -277,20 +277,18 @@ def dl645_readins(DI, ins, pn=3):
             strdata += dl645_xx_xxxx2hex(e[i])
         return strdata
 
-    # 有功功率
-    if '0204' == strDI[:4]:
+    # 无功功率
+    if '0204' == strDI[:4] and pn == 3:
         if DI[1] == 1:
             e = [ins[4][0]]
-        elif DI[1] == 2 and pn == 3:
+        elif DI[1] == 2:
             e = [ins[4][1]]
-        elif DI[1] == 3 and pn == 3:
+        elif DI[1] == 3:
             e = [ins[4][2]]
         elif DI[1] == 0:
             e = [ins[4][3]]
-        elif DI[1] == -1 and pn == 3:
+        elif DI[1] == -1:
             e = ins[4]
-        elif DI[1] == -1 and pn == 1:
-            e = [ins[4][3]]
 
         for i in range(len(e)):
             strdata += dl645_xx_xxxx2hex(e[i])
@@ -338,7 +336,7 @@ if __name__ == '__main__':
 
         ins = mtr.readins(index)
         print(ins)
-        dl645_read(dt, eng.energy, ins.ac)
+        dl645_read(dt, eng, ins.ac, mtr.getphaseNum(index))
 
         fe = dl645_makeframe(dt)
         print(fe)

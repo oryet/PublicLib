@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 volfluctu = 20
-curfluctu = 20
+curfluctu = 4
 PhaseA = 0
 PhaseB = 1
 PhaseC = 2
@@ -15,6 +15,8 @@ A = 2
 P = 3
 Q = 4
 
+TEST_EN = 1
+
 class ACsampling():
     def __init__(self):
         # self.I = [0]*4
@@ -25,25 +27,34 @@ class ACsampling():
 
     def vol(self):
         for i in range(3):
-            self.ac[U][i] = 220 + random.uniform(0, volfluctu)
+            if TEST_EN:
+                self.ac[U][i] = 220
+            else:
+                self.ac[U][i] = 220 + random.uniform(0, volfluctu)
 
     def cur(self):
         for i in range(3):
-            self.ac[I][i] = random.uniform(0, curfluctu)
+            if TEST_EN:
+                self.ac[I][i] = curfluctu
+            else:
+                self.ac[I][i] = random.uniform(0, curfluctu)
             self.ac[I][PhaseTotal] += self.ac[I][i]
 
     def angle(self):
         for i in range(3):
-            self.ac[A][i] = random.randint(0, 360)
+            if TEST_EN:
+                self.ac[A][i] = 0
+            else:
+                self.ac[A][i] = random.randint(0, 360)
 
     def power(self):
         self.ac[P][PhaseTotal] = 0
         self.ac[Q][PhaseTotal] = 0
         for i in range(3):
-            self.ac[P][i] = self.ac[U][i] * self.ac[I][i] * math.cos(math.radians(self.ac[A][i])) * 1e-4
+            self.ac[P][i] = self.ac[U][i] * self.ac[I][i] * math.cos(math.radians(self.ac[A][i])) * 1e-3
             self.ac[P][PhaseTotal] += self.ac[P][i]
 
-            self.ac[Q][i] = self.ac[U][i] * self.ac[I][i] * math.sin(math.radians(self.ac[A][i])) * 1e-4
+            self.ac[Q][i] = self.ac[U][i] * self.ac[I][i] * math.sin(math.radians(self.ac[A][i])) * 1e-3
             self.ac[Q][PhaseTotal] += self.ac[Q][i]
 
     def run(self):
