@@ -11,9 +11,8 @@ QUADRE2 = 3
 QUADRE3 = 4
 QUADRE4 = 5
 
-RATE_FUN = 1  # 默认记录在三费率
-RATE_DEFT_NUM = 3 + 1
-RATE_MAX_NUM = 4 + 1
+TEST_EN = 1
+
 
 class energy():
     def __init__(self, phaseNum=1):
@@ -36,51 +35,53 @@ class energy():
         else:
             self.phaseNum = 3 # 默认三相表
 
-        self.RATE_FUN = 1  # 默认记录在三费率
-        self.RATE_DEFT_NUM = 3 + 1
-        self.RATE_MAX_NUM = 4 + 1
+        self.RATE_DEFAULT_NUM = 3  # 默认记录在三费率
+        self.RATE_MAX_NUM = 4
 
         self.energy = [[[0]*9 for i in range(6) ] for i in range(4)]  # 8费率 6种组合 3个相位
 
     def rate(self):
-        return random.randint(1, self.phaseNum + 1)
+        if TEST_EN == 0:
+            return random.randint(1, self.RATE_MAX_NUM)
+        else:
+            return self.RATE_DEFAULT_NUM
 
     def run(self, ac, t):
         n = self.rate()
         for i in range(1,self.phaseNum + 1):
-            if ac.ac[2][i] >= 0:
-                d = ac.ac[3][i] * t / 3600
+            if ac[3][i] >= 0:
+                d = ac[3][i] * t / 3600
                 self.energy[i][POSACT][n] += d  # 正向有功
                 self.energy[0][POSACT][n] += d
                 self.energy[i][POSACT][0] += d
                 self.energy[0][POSACT][0] += d
             else:
-                d = abs(ac.ac[3][i] * t / 3600)
+                d = abs(ac[3][i] * t / 3600)
                 self.energy[i][NEGACT][n] += d
                 self.energy[0][NEGACT][n] += d
                 self.energy[i][NEGACT][0] += d
                 self.energy[0][NEGACT][0] += d
 
-            if 0 <= ac.ac[2][i] <= 90:
-                d = abs(ac.ac[4][i] * t / 3600)
+            if 0 <= ac[2][i] <= 90:
+                d = abs(ac[4][i] * t / 3600)
                 self.energy[i][QUADRE1][n] += d
                 self.energy[0][QUADRE1][n] += d
                 self.energy[i][QUADRE1][0] += d
                 self.energy[0][QUADRE1][0] += d
-            elif 90 < ac.ac[2][i] <= 180:
-                d = abs(ac.ac[4][i] * t / 3600)
+            elif 90 < ac[2][i] <= 180:
+                d = abs(ac[4][i] * t / 3600)
                 self.energy[i][QUADRE2][n] += d
                 self.energy[0][QUADRE2][n] += d
                 self.energy[i][QUADRE2][0] += d
                 self.energy[0][QUADRE2][0] += d
-            elif 180 < ac.ac[2][i] <= 270:
-                d = abs(ac.ac[4][i] * t / 3600)
+            elif 180 < ac[2][i] <= 270:
+                d = abs(ac[4][i] * t / 3600)
                 self.energy[i][QUADRE3][n] += d
                 self.energy[0][QUADRE3][n] += d
                 self.energy[i][QUADRE3][0] += d
                 self.energy[0][QUADRE3][0] += d
-            elif 270 < ac.ac[2][i] <= 360:
-                d = abs(ac.ac[4][i] * t / 3600)
+            elif 270 < ac[2][i] <= 360:
+                d = abs(ac[4][i] * t / 3600)
                 self.energy[i][QUADRE4][n] += d
                 self.energy[0][QUADRE4][n] += d
                 self.energy[i][QUADRE4][0] += d
@@ -94,8 +95,8 @@ class energy():
 
 if __name__ == '__main__':
     eng = energy(3)
-    ac = ACsampling()
+    ins = ACsampling()
     for i in range(10):
-        ac.run()
-        eng.run(ac, 3600)
+        ins.run()
+        eng.run(ins.ac, 3600)
         eng.eprint()

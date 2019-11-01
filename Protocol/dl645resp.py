@@ -124,7 +124,6 @@ def dl645_read(dt, eng, ins, pn=3):
 
     m = dt['data'][3]
     DI = dt['data'][:4]
-    print(DI)
 
     if m == 0x00:
         dt['datavalue'] = dl645_readenergy(DI, eng, pn)
@@ -194,15 +193,15 @@ def dl645_readenergy(DI, eng, pn=3):
     e = []
 
     if DI[2] == 0x01:  # (当前)正向有功总电能
-        e = eng[0][0][:4]
+        e = eng[0][0][:5]
     elif DI[2] == 0x02 and pn == 3:  # (当前)反向有功总电能
-        e = eng[0][1][:4]
+        e = eng[0][1][:5]
     elif DI[2] == 0x05 and pn == 3:  # (当前)第一象限无功总电能
-        e = eng[0][2][:4]
+        e = eng[0][2][:5]
     elif DI[2] == 0x06 and pn == 3:  # (当前)第二象限无功总电能
-        e = eng[0][3][:4]
+        e = eng[0][3][:5]
     elif DI[2] == 0x07 and pn == 3:  # (当前)第三象限无功总电能
-        e = eng[0][4][:4]
+        e = eng[0][4][:5]
     elif DI[2] == 0x08 and pn == 3:  # (当前)第四象限无功总电能
         e = eng[0][5]
 

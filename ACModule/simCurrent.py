@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 volfluctu = 20
-curfluctu = 4
+curfluctu = 20
 PhaseA = 0
 PhaseB = 1
 PhaseC = 2
@@ -15,7 +15,7 @@ A = 2
 P = 3
 Q = 4
 
-TEST_EN = 1
+TEST_EN = 0
 
 class ACsampling():
     def __init__(self):
