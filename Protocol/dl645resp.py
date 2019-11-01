@@ -111,6 +111,8 @@ def dl645_makeframe(dt):
     dt['cs'] = pfun.calcCheckSum(frame)
     frame += dt['cs'] + '16'
 
+    print('Send:', frame)
+
     # 字节间增加空格
     framespace = ''
     for i in range(0, len(frame), 2):
@@ -193,17 +195,42 @@ def dl645_readenergy(DI, eng, pn=3):
     e = []
 
     if DI[2] == 0x01:  # (当前)正向有功总电能
-        e = eng[0][0][:5]
+        if DI[1] == -1:
+            e = eng[0][0][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][0][DI[1]]]
     elif DI[2] == 0x02 and pn == 3:  # (当前)反向有功总电能
-        e = eng[0][1][:5]
+        if DI[1] == -1:
+            e = eng[0][1][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][1][DI[1]]]
     elif DI[2] == 0x05 and pn == 3:  # (当前)第一象限无功总电能
-        e = eng[0][2][:5]
+        if DI[1] == -1:
+            e = eng[0][2][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][2][DI[1]]]
     elif DI[2] == 0x06 and pn == 3:  # (当前)第二象限无功总电能
-        e = eng[0][3][:5]
+        if DI[1] == -1:
+            e = eng[0][3][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][3][DI[1]]]
     elif DI[2] == 0x07 and pn == 3:  # (当前)第三象限无功总电能
-        e = eng[0][4][:5]
+        if DI[1] == -1:
+            e = eng[0][4][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][4][DI[1]]]
     elif DI[2] == 0x08 and pn == 3:  # (当前)第四象限无功总电能
-        e = eng[0][5]
+        if DI[1] == -1:
+            e = eng[0][5][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][5][DI[1]]]
+
+    elif DI[2] == 0x15 and pn == 3:  # (当前)A相正向有功电能
+        e = eng[1][0][:1]
+    elif DI[2] == 0x29 and pn == 3:  # (当前)B相正向有功电能
+        e = eng[2][0][:1]
+    elif DI[2] == 0x3d and pn == 3:  # (当前)C相正向有功电能
+        e = eng[3][0][:1]
 
     strdata = ''
     for i in range(len(e)):
