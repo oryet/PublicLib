@@ -19,11 +19,8 @@ TEST_EN = 0
 
 class ACsampling():
     def __init__(self):
-        # self.I = [0]*4
-        # self.A = [0] * 4
-        # self.U = [220]*3
-        # self.Power = [[0] * 4, [0] * 4]  # 总/A/B/C
         self.ac = np.zeros([5, 4], dtype=float)  # 总/A/B/C   U/I/A/P/Q
+        self.ac[U] = 220
 
     def vol(self):
         for i in range(3):

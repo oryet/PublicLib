@@ -172,21 +172,36 @@ def dl645_xxx_x2hex(e):
     strhex = pfun._strReverse(strhex)
     return strhex
 
-def dl645_xxx_xxx2hex(e):
-    strhex = '00000000' + str((int(e * 1000)))
-    strhex = strhex[-6:]
+def dl645_xxx_xxx2hex(e, s=0):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1000))
+        s = str(int(strhex[-6],10) | 0x8)   # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-5:]
+    else:
+        strhex = '00000000' + str((int(e * 1000)))
+        strhex = strhex[-6:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
-def dl645_xx_xxxx2hex(e):
-    strhex = '00000000' + str((int(e * 10000)))
-    strhex = strhex[-6:]
+def dl645_xx_xxxx2hex(e, s=0):
+    if s == 1 and e < 0: # 有符号
+        strhex = '00000000' + str(int(e * -10000))
+        s = str(int(strhex[-6],10) | 0x8)   # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-5:]
+    else:
+        strhex = '00000000' + str(int(e * 10000))
+        strhex = strhex[-6:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
-def dl645_x_xxx2hex(e):
-    strhex = '00000000' + str((int(e * 1000)))
-    strhex = strhex[-4:]
+def dl645_x_xxx2hex(e, s=0):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1000))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-3:]
+    else:
+        strhex = '00000000' + str((int(e * 1000)))
+        strhex = strhex[-4:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
@@ -281,7 +296,7 @@ def dl645_readins(DI, ins, pn=3):
             e = [ins[1][3]]
 
         for i in range(len(e)):
-            strdata += dl645_xxx_xxx2hex(e[i])
+            strdata += dl645_xxx_xxx2hex(e[i], 1)
         return strdata
 
     # 有功功率
@@ -300,7 +315,7 @@ def dl645_readins(DI, ins, pn=3):
             e = [ins[3][3]]
 
         for i in range(len(e)):
-            strdata += dl645_xx_xxxx2hex(e[i])
+            strdata += dl645_xx_xxxx2hex(e[i], 1)
         return strdata
 
     # 无功功率
@@ -317,7 +332,7 @@ def dl645_readins(DI, ins, pn=3):
             e = ins[4]
 
         for i in range(len(e)):
-            strdata += dl645_xx_xxxx2hex(e[i])
+            strdata += dl645_xx_xxxx2hex(e[i], 1)
         return strdata
 
     return strdata
