@@ -74,7 +74,7 @@ class simSerial(threading.Thread):
             # 判断是否打开成功
             if (ser.is_open):
                 ret = True
-                threading.Thread(target=self.ReadData, args=(ser,)).start()
+                threading.Thread(target=self.ReadDatas, args=(ser,)).start()
         except Exception as e:
             print("---异常---：", e)
         return ret, ser
