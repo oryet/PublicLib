@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+
 sys.path.append('../')
 from PublicLib.public import calcCheckSum
 import PublicLib.public as pfun
@@ -231,6 +232,11 @@ def dl645_readenergy(DI, eng, pn=3):
             e = eng[0][1][:5]
         elif 0 <= DI[1] <= 8:
             e = [eng[0][1][DI[1]]]
+    elif DI[2] == 0x00:  # (当前)组合有功 = Bit0(有功+)  Bit2(无功+)
+        if DI[1] == -1:
+            e = eng[0][0][:5] + eng[0][1][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][0][DI[1]] + eng[0][1][DI[1]]]
     elif DI[2] == 0x05 and pn == 3:  # (当前)第一象限无功总电能
         if DI[1] == -1:
             e = eng[0][2][:5]
@@ -251,6 +257,16 @@ def dl645_readenergy(DI, eng, pn=3):
             e = eng[0][5][:5]
         elif 0 <= DI[1] <= 8:
             e = [eng[0][5][DI[1]]]
+    elif DI[2] == 0x03 and pn == 3:  # 组合无功1 = 一/二象限相加
+        if DI[1] == -1:
+            e = eng[0][2][:5] + eng[0][3][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][2][DI[1]] + eng[0][3][DI[1]]]
+    elif DI[2] == 0x04 and pn == 3:  # 组合无功2 = 三/四象限相加
+        if DI[1] == -1:
+            e = eng[0][4][:5] + eng[0][5][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][4][DI[1]] + eng[0][5][DI[1]]]
 
     elif DI[2] == 0x15 and pn == 3:  # (当前)A相正向有功电能
         e = eng[1][0][:1]
