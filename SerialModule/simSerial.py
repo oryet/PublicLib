@@ -31,6 +31,7 @@ class simSerial(threading.Thread):
 
         return self.DWritePort(ser, data)
 
+    '''
     def ReadData(self, ser):
         # 循环接收数据，此为死循环，可用线程实现
         while True:
@@ -42,6 +43,7 @@ class simSerial(threading.Thread):
                 strRecv = self.ByteToHex(byteRecv)
                 self.q.put(strRecv)
                 print("Recv:", strRecv)
+    '''
 
     def ReadDatas(self, ser):
         while True:

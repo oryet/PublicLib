@@ -1,5 +1,5 @@
 import sys
-
+import numpy as np
 sys.path.append('../')
 from PublicLib.public import calcCheckSum
 import PublicLib.public as pfun
@@ -166,16 +166,18 @@ def dl645_xxxxxx_xx2hex(e):
     strhex = pfun._strReverse(strhex)
     return strhex
 
+
 def dl645_xxx_x2hex(e):
     strhex = '00000000' + str((int(e * 10)))
     strhex = strhex[-4:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
+
 def dl645_xxx_xxx2hex(e, s=0):
     if s == 1 and e < 0:  # 有符号
         strhex = '00000000' + str(int(e * -1000))
-        s = str(int(strhex[-6],10) | 0x8)   # 最高字节 | 0x80 表示符号位
+        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
         strhex = s + strhex[-5:]
     else:
         strhex = '00000000' + str((int(e * 1000)))
@@ -183,16 +185,18 @@ def dl645_xxx_xxx2hex(e, s=0):
     strhex = pfun._strReverse(strhex)
     return strhex
 
+
 def dl645_xx_xxxx2hex(e, s=0):
-    if s == 1 and e < 0: # 有符号
+    if s == 1 and e < 0:  # 有符号
         strhex = '00000000' + str(int(e * -10000))
-        s = str(int(strhex[-6],10) | 0x8)   # 最高字节 | 0x80 表示符号位
+        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
         strhex = s + strhex[-5:]
     else:
         strhex = '00000000' + str(int(e * 10000))
         strhex = strhex[-6:]
     strhex = pfun._strReverse(strhex)
     return strhex
+
 
 def dl645_x_xxx2hex(e, s=0):
     if s == 1 and e < 0:  # 有符号
@@ -204,6 +208,14 @@ def dl645_x_xxx2hex(e, s=0):
         strhex = strhex[-4:]
     strhex = pfun._strReverse(strhex)
     return strhex
+
+
+def dl645_xxx_x2hex(e):
+    strhex = '00000000' + str((int(e * 10)))
+    strhex = strhex[-4:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
 
 def dl645_readenergy(DI, eng, pn=3):
     # energy  [相位][类型][费率]
@@ -267,13 +279,13 @@ def dl645_readins(DI, ins, pn=3):
     if '0201' == strDI[:4]:
         if DI[1] == 1:
             e = [ins[0][0]]
-        elif DI[1] == 2  and pn == 3:
+        elif DI[1] == 2 and pn == 3:
             e = [ins[0][1]]
-        elif DI[1] == 3  and pn == 3:
+        elif DI[1] == 3 and pn == 3:
             e = [ins[0][2]]
-        elif DI[1] == -1  and pn == 3:
+        elif DI[1] == -1 and pn == 3:
             e = ins[0][:3]
-        elif DI[1] == -1  and pn == 1:
+        elif DI[1] == -1 and pn == 1:
             e = [ins[0][0]]
 
         for i in range(len(e)):
@@ -335,7 +347,58 @@ def dl645_readins(DI, ins, pn=3):
             strdata += dl645_xx_xxxx2hex(e[i], 1)
         return strdata
 
+    # 视在功率
+    if '0205' == strDI[:4] and pn == 3:
+        if DI[1] == 1:
+            e = [(ins[3][0] ** 2 + ins[4][0] ** 2) ** 0.5]
+        elif DI[1] == 2:
+            e = [(ins[3][1] ** 2 + ins[4][1] ** 2) ** 0.5]
+        elif DI[1] == 3:
+            e = [(ins[3][2] ** 2 + ins[4][2] ** 2) ** 0.5]
+        elif DI[1] == 0:
+            e = [(ins[3][3] ** 2 + ins[4][3] ** 2) ** 0.5]
+        elif DI[1] == -1:
+            e = (ins[3] ** 2 + ins[4] ** 2) ** 0.5
+
+        for i in range(len(e)):
+            strdata += dl645_xx_xxxx2hex(e[i], 1)
+        return strdata
+
+    # 功率因数
+    if '0206' == strDI[:4] and pn == 3:
+        if DI[1] == 1:
+            e = [np.cos(ins[2][0] * np.pi / 180)]
+        elif DI[1] == 2:
+            e = [np.cos(ins[2][1] * np.pi / 180)]
+        elif DI[1] == 3:
+            e = [np.cos(ins[2][2] * np.pi / 180)]
+        elif DI[1] == 0:
+            e = [np.cos(np.sum(ins[2]) * np.pi / 180)]
+        elif DI[1] == -1:
+            ins[2][3] = np.sum(ins[2])
+            e = np.cos(ins[2] * np.pi / 180)
+
+        for i in range(len(e)):
+            strdata += dl645_x_xxx2hex(e[i], 1)
+        return strdata
+
+    # 相角
+    if '0207' == strDI[:4] and pn == 3:
+        if DI[1] == 0:
+            e = [ins[2][0]]
+        elif DI[1] == 1:
+            e = [ins[2][1]]
+        elif DI[1] == 2:
+            e = [ins[2][2]]
+        elif DI[1] == -1:
+            e = ins[2][:3]
+
+        for i in range(len(e)):
+            strdata += dl645_xxx_x2hex(e[i])
+        return strdata
+
     return strdata
+
 
 def dl645_readevent():
     pass
