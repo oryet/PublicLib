@@ -121,25 +121,49 @@ def dl645_makeframe(dt):
     return framespace
 
 
-def dl645_read(dt, eng, ins, pn=3):
+def dl645_read(dt, mtr, index, mmtr=None):
+    if mmtr:
+        pn = mmtr.getphaseNum(index)
+    else:
+        pn = mtr.getphaseNum(index)
+
     if len(dt['data']) < 4:
         return
 
     m = dt['data'][3]
+    n = dt['data'][0]
     DI = dt['data'][:4]
 
-    if m == 0x00:
+    if m == 0x00 and n == 0x00:
+        if mmtr:
+            eng = mmtr.readenergy(mtr, index)
+        else:
+            eng = mtr.readenergy(index)
         dt['datavalue'] = dl645_readenergy(DI, eng, pn)
+    elif m == 0x00 and 1 <= n <= 12:
+        if mmtr:
+            fzday = None
+        else:
+            fzday = mtr.readhismon(index, n)
+        dt['datavalue'] = dl645_readfremonth(DI, fzday, pn)
     elif m == 0x01:
         dt['datavalue'] = dl645_readdemand()
     elif m == 0x02:
+        if mmtr:
+            ins = mmtr.readins(index)
+        else:
+            ins = mtr.readins(index)
         dt['datavalue'] = dl645_readins(DI, ins, pn)
     elif m == 0x03:
         dt['datavalue'] = dl645_readevent()
     elif m == 0x04:
         dt['datavalue'] = dl645_readpara()
     elif m == 0x05:
-        dt['datavalue'] = dl645_readfre()
+        if mmtr:
+            fzday = None
+        else:
+            fzday = mtr.readhisday(index, n)
+        dt['datavalue'] = dl645_readfreday(DI, fzday, pn)
     elif m == 0x06:
         dt['datavalue'] = dl645_readcure()
 
@@ -424,9 +448,97 @@ def dl645_readpara():
     pass
 
 
-def dl645_readfre():
-    pass
+def dl645_readfreday(DI, eng, pn=3):
+    e = []
+    strdata = ''
 
+    if eng is None:
+        return strdata
+
+    if DI[1] == 0x01:  # (当前)正向有功总电能
+        e = eng[0][0][:5]
+    elif DI[1] == 0x02 and pn == 3:  # (当前)反向有功总电能
+        e = eng[0][1][:5]
+    elif DI[1] == 0x05 and pn == 3:  # (当前)第一象限无功总电能
+        e = eng[0][2][:5]
+    elif DI[1] == 0x06 and pn == 3:  # (当前)第二象限无功总电能
+        e = eng[0][3][:5]
+    elif DI[1] == 0x07 and pn == 3:  # (当前)第三象限无功总电能
+        e = eng[0][4][:5]
+    elif DI[1] == 0x08 and pn == 3:  # (当前)第四象限无功总电能
+        e = eng[0][5][:5]
+    elif DI[1] == 0x03 and pn == 3:  # 组合无功1 = 一/二象限相加
+        e = eng[0][2][:5] + eng[0][3][:5]
+    elif DI[1] == 0x04 and pn == 3:  # 组合无功2 = 三/四象限相加
+        e = eng[0][4][:5] + eng[0][5][:5]
+
+    for i in range(len(e)):
+        strdata += dl645_xxxxxx_xx2hex(e[i])
+    return strdata
+
+def dl645_readfremonth(DI, eng, pn=3):
+    e = []
+    strdata = ''
+
+    if eng is None:
+        return strdata
+
+    if DI[1] == 0x01:  # (当前)正向有功总电能
+        if DI[1] == -1:
+            e = eng[0][0][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][0][DI[1]]]
+    elif DI[1] == 0x02 and pn == 3:  # (当前)反向有功总电能
+        if DI[1] == -1:
+            e = eng[0][1][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][1][DI[1]]]
+    elif DI[1] == 0x00:  # (当前)组合有功 = Bit0(有功+)  Bit2(无功+)
+        if DI[1] == -1:
+            e = eng[0][0][:5] + eng[0][1][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][0][DI[1]] + eng[0][1][DI[1]]]
+    elif DI[1] == 0x05 and pn == 3:  # (当前)第一象限无功总电能
+        if DI[1] == -1:
+            e = eng[0][2][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][2][DI[1]]]
+    elif DI[1] == 0x06 and pn == 3:  # (当前)第二象限无功总电能
+        if DI[1] == -1:
+            e = eng[0][3][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][3][DI[1]]]
+    elif DI[1] == 0x07 and pn == 3:  # (当前)第三象限无功总电能
+        if DI[1] == -1:
+            e = eng[0][4][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][4][DI[1]]]
+    elif DI[1] == 0x08 and pn == 3:  # (当前)第四象限无功总电能
+        if DI[1] == -1:
+            e = eng[0][5][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][5][DI[1]]]
+    elif DI[1] == 0x03 and pn == 3:  # 组合无功1 = 一/二象限相加
+        if DI[1] == -1:
+            e = eng[0][2][:5] + eng[0][3][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][2][DI[1]] + eng[0][3][DI[1]]]
+    elif DI[1] == 0x04 and pn == 3:  # 组合无功2 = 三/四象限相加
+        if DI[1] == -1:
+            e = eng[0][4][:5] + eng[0][5][:5]
+        elif 0 <= DI[1] <= 8:
+            e = [eng[0][4][DI[1]] + eng[0][5][DI[1]]]
+
+    elif DI[1] == 0x15 and pn == 3:  # (当前)A相正向有功电能
+        e = eng[1][0][:1]
+    elif DI[1] == 0x29 and pn == 3:  # (当前)B相正向有功电能
+        e = eng[2][0][:1]
+    elif DI[1] == 0x3d and pn == 3:  # (当前)C相正向有功电能
+        e = eng[3][0][:1]
+
+    for i in range(len(e)):
+        strdata += dl645_xxxxxx_xx2hex(e[i])
+    return strdata
 
 def dl645_readcure():
     pass
@@ -456,7 +568,7 @@ if __name__ == '__main__':
 
         ins = mtr.readins(index)
         print(ins)
-        dl645_read(dt, eng, ins.ac, mtr.getphaseNum(index))
+        dl645_read(dt, mtr, index)
 
         fe = dl645_makeframe(dt)
         print(fe)
