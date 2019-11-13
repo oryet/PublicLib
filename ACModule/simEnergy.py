@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from PublicLib.ACModule.simCurrent import ACsampling
 
 POS = 0
@@ -16,20 +17,6 @@ TEST_EN = 1
 
 class energy():
     def __init__(self, phaseNum=1):
-        self.POS = 0
-        self.NEG = 1
-
-        self.POSACT = 0
-        self.NEGACT = 1
-        self.QUADRE1 = 2
-        self.QUADRE2 = 3
-        self.QUADRE3 = 4
-        self.QUADRE4 = 5
-
-        self.PhaseTotal = 0
-        self.PhaseA = 1
-        self.PhaseB = 2
-        self.PhaseC = 3
         if phaseNum == 1 or phaseNum == 3:
             self.phaseNum = phaseNum
         else:
@@ -38,7 +25,7 @@ class energy():
         self.RATE_DEFAULT_NUM = 3  # 默认记录在三费率
         self.RATE_MAX_NUM = 4
 
-        self.energy = [[[0]*9 for i in range(6) ] for i in range(4)]  # 8费率 6种组合 3个相位
+        self.energy = np.zeros([4, 6, 9], dtype=float)
 
     def rate(self):
         if TEST_EN == 0:

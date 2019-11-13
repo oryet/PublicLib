@@ -2,8 +2,8 @@ import random
 import math
 import numpy as np
 
-volfluctu = 20
-curfluctu = 20
+volfluctu = 5
+curfluctu = 5
 PhaseA = 0
 PhaseB = 1
 PhaseC = 2
