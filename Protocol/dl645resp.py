@@ -6,6 +6,7 @@ import PublicLib.Protocol.dl645format as fat
 import PublicLib.ACModule.read_ins as rdins
 import PublicLib.ACModule.read_energy as rdeng
 import PublicLib.ACModule.read_freeze as rdfrz
+import PublicLib.ACModule.read_para as rdpara
 
 # 645报文各元素的位置
 POS_64507_HEAD = 0
@@ -121,7 +122,7 @@ def dl645_read(dt, mtr, index, mmtr=None):
     elif DI[0] == 0x03:
         dt['datavalue'] = dl645_readevent()
     elif DI[0] == 0x04:
-        dt['datavalue'] = dl645_readpara()
+        dt['datavalue'] = rdpara.dl645_readpara(DI)
     elif DI[0] == 0x05:
         if mmtr:
             fzday = None
@@ -162,11 +163,6 @@ def dl645_readdemand():
 
 def dl645_readevent():
     pass
-
-
-def dl645_readpara():
-    pass
-
 
 
 
