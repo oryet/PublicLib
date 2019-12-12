@@ -55,7 +55,7 @@ class simSerial(threading.Thread):
                 n = ser.inWaiting()
                 if n > 0:
                     data += ser.read(n)
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                 else:
                     quit = True
                     break
