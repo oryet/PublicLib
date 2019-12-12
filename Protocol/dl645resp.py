@@ -115,7 +115,7 @@ def dl645_read(dt, mtr, index, mmtr=None):
         dt['datavalue'] = dl645_readdemand()
     elif DI[0] == 0x02:
         if mmtr:
-            ins = mmtr.readins(index)
+            ins = mmtr.readins(mtr, index)
         else:
             ins = mtr.readins(index)
         dt['datavalue'] = rdins.dl645_readins(DI, ins, pn)
@@ -172,14 +172,15 @@ if __name__ == '__main__':
     from PublicLib.ACModule.simRTC import simrtc
 
     mtr = meter485()
-    mtr.addmeter(1)
+    mtr.addmeter(1,3)
     mtr.run(3600)
     mtr.run(3600)
 
     # frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 32 35 33 4b 16'
     # frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 33 37 35 50 16'
     # frame = '68 01 00 00 00 50 48 68 11 04 33 32 34 35 4C 16'
-    frame = 'FE FE FE FE 68 AA AA AA AA AA AA 68 11 04 33 33 39 38 B8 16 '
+    #frame = 'FE FE FE FE 68 AA AA AA AA AA AA 68 11 04 33 33 39 38 B8 16 '
+    frame = '68230100001523681104333337351316'
     ret, dt = dl645_dealframe(frame)
     print(ret, dt)
 
