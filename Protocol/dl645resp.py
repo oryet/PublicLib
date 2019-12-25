@@ -7,6 +7,7 @@ import PublicLib.ACModule.read_ins as rdins
 import PublicLib.ACModule.read_energy as rdeng
 import PublicLib.ACModule.read_freeze as rdfrz
 import PublicLib.ACModule.read_para as rdpara
+import PublicLib.ACModule.read_demand as rddemand
 
 # 645报文各元素的位置
 POS_64507_HEAD = 0
@@ -112,7 +113,13 @@ def dl645_read(dt, mtr, index, mmtr=None):
             fzday = mtr.readhismon(index, DI[3])
         dt['datavalue'] = rdfrz.dl645_readfremonth(DI, fzday, pn)
     elif DI[0] == 0x01:
-        dt['datavalue'] = dl645_readdemand()
+        dt['datavalue'] = rddemand.dl645_readdemand()
+    elif DI[0] == 0x02 and DI[1] == 0x80:
+        if mmtr:
+            demand = mmtr.readdemand(mtr, index)
+        else:
+            demand = mtr.readdemand(index)
+        dt['datavalue'] = rddemand.dl645_readdemand(DI, demand, pn)
     elif DI[0] == 0x02:
         if mmtr:
             ins = mmtr.readins(mtr, index)
@@ -155,8 +162,8 @@ def dl645_clearmeter():
 
 
 
-def dl645_readdemand():
-    pass
+# def dl645_readdemand():
+#     pass
 
 
 

@@ -25,7 +25,8 @@ class energy():
         self.RATE_DEFAULT_NUM = 3  # 默认记录在三费率
         self.RATE_MAX_NUM = 4
 
-        self.energy = np.zeros([4, 6, 9], dtype=float)
+        self.energy = np.zeros([4, 6, 9], dtype=float)  # (总ABC) （正/反/I/II/III/IV）(总1~8费率)
+        self.demand = np.zeros([4, 6, 3], dtype=float)     # (总ABC) （正/反/I/II/III/IV） (召测值/量/时间)
 
     def rate(self):
         if TEST_EN == 0:
@@ -33,7 +34,22 @@ class energy():
         else:
             return self.RATE_DEFAULT_NUM
 
+    def demandrun(self, ac, t):
+        for i in range(1,self.phaseNum + 1):
+            if ac[3][i] >= 0 and t <= 60:
+                d = ac[3][i] * t
+                self.demand[i][POSACT][1] += d
+                self.demand[i][POSACT][2] += t
+
+                if self.demand[i][POSACT][2] >= 60:
+                    self.demand[0][POSACT][0] = 0
+                    self.demand[i][POSACT][0] = self.demand[i][POSACT][1] * (3600/1000) / self.demand[i][POSACT][2] # kw
+                    self.demand[0][POSACT][0] += self.demand[i][POSACT][0]
+                    self.demand[i][POSACT][1] = 0
+                    self.demand[i][POSACT][2] = 0
+
     def run(self, ac, t):
+        self.demandrun(ac, t) # 需量计算
         n = self.rate()
         for i in range(1,self.phaseNum + 1):
             if ac[3][i] >= 0:
