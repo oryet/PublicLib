@@ -20,6 +20,9 @@ para2cfg = {'年时区数': '01',
             '梯度数': '04',
             }
 
+para3cfg = {'电流互感器变比': '001000',
+            '电压互感器变比': '000001',
+            }
 
 def readpara1(DI):
     strdata = ''
@@ -97,6 +100,18 @@ def readpara2(DI):
         strdata = pfun._strReverse(strdata)
     return strdata
 
+def readpara3(DI):
+    strdata = ''
+
+    # 电流互感器变比
+    # 电压互感器变比
+    if DI[3] == 0x06:
+        strdata = para3cfg['电流互感器变比']
+        strdata = pfun._strReverse(strdata)
+    elif DI[3] == 0x07:
+        strdata = para3cfg['电压互感器变比']
+        strdata = pfun._strReverse(strdata)
+    return strdata
 
 def dl645_readpara(DI):
     strdata = ''
@@ -105,6 +120,8 @@ def dl645_readpara(DI):
         strdata = readpara1(DI)
     elif DI[2] == 0x02:
         strdata = readpara2(DI)
+    elif DI[2] == 0x03:
+        strdata = readpara3(DI)
 
     return strdata
 
