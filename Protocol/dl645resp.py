@@ -79,7 +79,7 @@ def dl645_makeframe(dt):
     dt['cs'] = pfun.calcCheckSum(frame)
     frame += dt['cs'] + '16'
 
-    print('Send:', frame)
+    # print('Send:', frame)
 
     # 字节间增加空格
     framespace = ''

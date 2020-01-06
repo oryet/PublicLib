@@ -62,7 +62,7 @@ class simSerial(threading.Thread):
             if quit:
                 strRecv = self.ByteToHex(data)
                 self.q.put(strRecv)
-                print("Recv:", strRecv)
+                # print("Recv:", strRecv)
 
     # 打开串口
     # 端口，GNU / Linux上的/ dev / ttyUSB0 等 或 Windows上的 COM3 等
