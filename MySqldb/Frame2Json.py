@@ -91,21 +91,23 @@ def processdata(ip, port, jdata):
        {'ip':'218.204.253.169','port':'59080', 'recvData':{'Len':'0124','Cmd':'Login','SN':'1',
        'DataTime':'190719130028','CRC':'FFFF','DataValue':{'04A20209':'111111111111#000000000000#00000000'}}}
        '''
-        addr = jdata['DataValue']['04A20209'][:12]
-        dt = datetimeformat(jdata['DataTime'])
-        iport = int(port, 10)
-        # cdt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        jdb.insertlogin(addr, ip, iport, dt)
+        if jdata['DataValue'] == '04A20209':
+            addr = jdata['DataValue']['04A20209'][:12]
+            dt = datetimeformat(jdata['DataTime'])
+            iport = int(port, 10)
+            # cdt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            jdb.insertlogin(addr, ip, iport, dt)
     elif jdata['Cmd'] == 'Heart':
         '''
        {'ip':'36.113.229.239','port':'25344', 'recvData':{'Len':'0105','Cmd':'Heart','SN':'8266',
        'DataTime':'190729021526','CRC':'FFFF','DataValue':{'04A20208':'201708090001'}}}
        '''
-        addr = jdata['DataValue']['04A20208'][:12]
-        dt = datetimeformat(jdata['DataTime'])
-        iport = int(port, 10)
-        # cdt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        jdb.insertlogin(addr, ip, iport, dt)
+        if jdata['DataValue'] == '04A20208':
+            addr = jdata['DataValue']['04A20208'][:12]
+            dt = datetimeformat(jdata['DataTime'])
+            iport = int(port, 10)
+            # cdt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            jdb.insertlogin(addr, ip, iport, dt)
     elif jdata['Cmd'] == 'Report':
         '''
         {'ip':'218.204.253.169','port':'59080', 'recvData':{'Len':'0380','Cmd':'Report','SN':'8272',
