@@ -1,8 +1,10 @@
 import json
 import re
 import PublicLib.public as pfun
+import time
 
 g_cnt = 0
+
 
 def subStrToJson(data):
     if data == None:
@@ -21,6 +23,7 @@ def subStrToJson(data):
     # print(addr)
     return data_json
 
+
 def JsonParse(data):
     if (data['Len']):
         if (data['Cmd']):
@@ -31,9 +34,10 @@ def JsonParse(data):
                             return [data['DataValue']]
     return [False]
 
+
 def JsonDealFrame(recvframe, senddata, answer):
-    json_frame = recvframe # subStrToJson(recvframe)
-    json_senddata = senddata # subStrToJson(senddata)
+    json_frame = recvframe  # subStrToJson(recvframe)
+    json_senddata = senddata  # subStrToJson(senddata)
 
     if isinstance(json_frame, dict) is False:
         return -1, None
@@ -51,22 +55,32 @@ def JsonDealFrame(recvframe, senddata, answer):
             json_senddata = json.loads(json_senddata)
 
         if json_senddata["Cmd"] == json_frame["Cmd"]:
-            if json_senddata["DataValue"].keys() ==  json_frame["DataValue"].keys():
+            if json_senddata["DataValue"].keys() == json_frame["DataValue"].keys():
                 value = list(json_frame["DataValue"].values())[0]
                 if value == answer:
                     return 1, value
     return -1, None
 
 
-def JsonMakeFrame(Value):
+# parm
+# key:cmd  value:Read/Set/..
+# DataValue dict key1:value1 ... key n:value n
+def JsonMakeFrame(parm):
     global g_cnt
     g_cnt = g_cnt + 1
-    data = {"Len":"312","Cmd":Value[0],"SN":str(g_cnt),"DataTime":"180706121314","CRC":"FFFF",
-            "DataValue":Value[1]}
+    if g_cnt > 9999:
+        g_cnt = 0
 
-    dv = str(Value[1])[1:-1].replace(" ", "")  # 去大括号和空格
+    datatime = time.strftime("%y%m%d%H%M%S", time.localtime())
+    data = dict(Len="312", Cmd=parm["Cmd"], SN=str(g_cnt), DataTime=datatime, CRC="FFFF", DataValue=parm["DataValue"])
+
+    # 计算CRC
+    dv = '\"DataValue\"' + ':' + str(parm["DataValue"])
     dv = "0000" + pfun.crc16str(0, dv, False)
     data["CRC"] = dv[-4:]
+
+    # 计算长度
+    data["Len"] = str(len(str(data)) - 12)
 
     # 将python对象data转换json对象
     data_json = json.dumps(data, ensure_ascii=False)
@@ -76,6 +90,7 @@ def JsonMakeFrame(Value):
 
     return data_json
 
+
 '''
 def JsonMakeValue(DIlist):
     for i in DIlist:
@@ -83,20 +98,17 @@ def JsonMakeValue(DIlist):
 '''
 
 if __name__ == '__main__':
-    Value = {"05060102":"", "05060103":"123456"}
-
     # 数据项和内容
-    cmd = 'Set'
     DIList = ['05060101', '05060102', '05060103']
     ValueList = ['000000.00', '123.14', '778899']
     List = dict(zip(DIList, ValueList))
 
-    MakeFramePara = []
-    MakeFramePara += [cmd]
-    MakeFramePara += [List]
+    MakeFramePara = {}
+    MakeFramePara['Cmd'] = 'Set'
+    MakeFramePara['DataValue'] = List
 
     # 元组转json
-    #DIValue = json.loads(data_python)
+    # DIValue = json.loads(data_python)
 
     # json 转 字符串
     data_python = JsonMakeFrame(MakeFramePara)
@@ -105,8 +117,6 @@ if __name__ == '__main__':
     # 字符串 转 json
     data = json.loads(data_python)
     JsonDealFrame(data_python, data, "000000.00")
-
-
 
     # a = JsonParse(data)
     '''
