@@ -20,7 +20,7 @@ para2cfg = {'年时区数': '01',
             '梯度数': '04',
             }
 
-para3cfg = {'电流互感器变比': '001000',
+para3cfg = {'电流互感器变比': '000005',
             '电压互感器变比': '000001',
             }
 
@@ -113,16 +113,27 @@ def readpara3(DI):
         strdata = pfun._strReverse(strdata)
     return strdata
 
-def dl645_readpara(DI):
+def readexinfo(DI):
     strdata = ''
 
-    if DI[2] == 0x01:
-        strdata = readpara1(DI)
-    elif DI[2] == 0x02:
-        strdata = readpara2(DI)
-    elif DI[2] == 0x03:
-        strdata = readpara3(DI)
+    # 2937设备类型
+    if DI[3] == 0x01: # TLY2937-SW-V1.0
+        strdata = '544c59323933372d53572d56312e300000000000000000000000000000000000'
+        return strdata
 
+def dl645_readpara(DI, DevType):
+    strdata = ''
+
+    if DI[1] == 0x00:
+        if DI[2] == 0x01:
+            strdata = readpara1(DI)
+        elif DI[2] == 0x02:
+            strdata = readpara2(DI)
+        elif DI[2] == 0x03:
+            strdata = readpara3(DI)
+    elif DI[1] == 0x80 and DevType == '2937': # 自定义扩展信息
+        if DI[2] == 0x00:
+            strdata = readexinfo(DI)
     return strdata
 
 

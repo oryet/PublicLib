@@ -129,7 +129,7 @@ def dl645_read(dt, mtr, index, mmtr=None):
     elif DI[0] == 0x03:
         dt['datavalue'] = dl645_readevent()
     elif DI[0] == 0x04:
-        dt['datavalue'] = rdpara.dl645_readpara(DI)
+        dt['datavalue'] = rdpara.dl645_readpara(DI, dt['addr'][0:4])
     elif DI[0] == 0x05:
         if mmtr:
             fzday = None
