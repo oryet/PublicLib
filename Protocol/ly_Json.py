@@ -75,7 +75,7 @@ def JsonMakeFrame(parm):
     data = dict(Len="312", Cmd=parm["Cmd"], SN=str(g_cnt), DataTime=datatime, CRC="FFFF", DataValue=parm["DataValue"])
 
     # 计算CRC
-    dv = '\"DataValue\"' + ':' + str(parm["DataValue"])
+    dv = '\'DataValue\'' + ':' + str(parm["DataValue"]).replace(' ', '')
     dv = "0000" + pfun.crc16str(0, dv, False)
     data["CRC"] = dv[-4:]
 
@@ -106,6 +106,8 @@ if __name__ == '__main__':
     MakeFramePara = {}
     MakeFramePara['Cmd'] = 'Set'
     MakeFramePara['DataValue'] = List
+
+    # CRC16 IBM： E8FE
 
     # 元组转json
     # DIValue = json.loads(data_python)
