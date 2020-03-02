@@ -16,12 +16,28 @@ def subStrToJson(data):
     # 字符串 转 json
     try:
         data_json = json.loads(data)
+        if not IsJsonFrame(data_json):
+            return None
     except:
         print(data)
         return None
     # addr = data_json['DataValue']['04A20208']
     # print(addr)
     return data_json
+
+
+def IsJsonFrame(data):
+    if data == None:
+        return False
+
+    if data['Len']:
+        if (data['Cmd']):
+            if (data['SN']):
+                if (data['DataTime']):
+                    if (data['CRC']):
+                        if (data['DataValue']):
+                            return  True
+    return False
 
 
 def JsonParse(data):
