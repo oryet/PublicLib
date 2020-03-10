@@ -91,7 +91,10 @@ class simSerial(threading.Thread):
     def DWritePort(self, ser, text):
         # result = ser.write(text.encode("gbk"))  # 写数据
         # result = ser.write(text.encode("utf-8"))  # 写数据
-        result = ser.write(text)  # 写数据
+        try:
+            result = ser.write(text)  # 写数据
+        except:
+            pass
         return result
 
     # 读数据

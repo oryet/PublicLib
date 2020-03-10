@@ -58,18 +58,34 @@ class Myserver(socketserver.BaseRequestHandler):
 
                     con.Updata(conn, self.client_address[0], self.client_address[1], MAX_LIVE_TIME, self.serverClass["type"])
                     q.put(self.serverClass)
+                    # 分类应答
                     if self.serverClass["type"] == "json":
                         socket_json(ret_str, conn)
                     elif self.serverClass["type"] == "hex":
                         socket3761(ret_str, p, conn)
                     elif self.serverClass["type"] == "str":
-                        sapp.socketMsgHandle(ret_str, con)
+                        sapp.socketMsgHandle(con, conn, self.serverClass)
+
+                    # 监听
+                    self.listen(conn, con)
+
                 elif len(ret_str) == 0:
                     self.remove()
                     break
             except:  # 意外掉线
                 self.remove()
                 break
+
+    def listen(self, conn, con):
+        # 存在监听端口
+        listenlist = con.IsListenPort(conn)
+
+        # 向监听端口转发当前报文
+        for port in listenlist:
+            n = con.GetConnIndex(None, port)
+            if 0 <= n < con.GetLinkNum():
+                senddata = '\r\n' + self.serverClass['ip'] + ':' + self.serverClass['port'] + ' recv:'+ self.serverClass['recvData']
+                SocketSend(n, senddata)
 
     def finish(self):
         print("client remove!")
