@@ -109,8 +109,8 @@ def JsonMakeFrame(parm):
         data = dict(Len="312", Cmd=parm["Cmd"], SN=str(g_cnt), DataTime=datatime, CRC="FFFF", DataValue=parm["DataValue"])
 
         # 计算CRC
-        dv = '\'DataValue\'' + ':' + str(parm["DataValue"]).replace(' ', '')
-        dv = "0000" + pfun.crc16str(0, dv, False)
+        dv = str(parm["DataValue"]).replace(' ', '')
+        dv = "0000" + pfun.crc16str(0, dv[1:-1], False)
         data["CRC"] = dv[-4:]
 
         # 计算长度
