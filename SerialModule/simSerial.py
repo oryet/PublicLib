@@ -11,6 +11,9 @@ class simSerial(threading.Thread):
     def ByteToHex(self, bins):
         return ''.join(["%02X" % x for x in bins]).strip()
 
+    def ByteToStr(self, bins):
+        return str(bins, encoding='utf-8')
+
     def onRecvData(self, data):
         try:
             data = data.decode("GBK")
@@ -45,7 +48,7 @@ class simSerial(threading.Thread):
                 print("Recv:", strRecv)
     '''
 
-    def ReadDatas(self, ser):
+    def ReadDatas(self, ser, bytetimeout=0.05, _type='hex'):
         while True:
             data = ser.read(1)
             time.sleep(0.02)
@@ -55,12 +58,15 @@ class simSerial(threading.Thread):
                 n = ser.inWaiting()
                 if n > 0:
                     data += ser.read(n)
-                    time.sleep(0.05)
+                    time.sleep(bytetimeout)
                 else:
                     quit = True
                     break
             if quit:
-                strRecv = self.ByteToHex(data)
+                if _type == 'hex':
+                    strRecv = self.ByteToHex(data)
+                else:
+                    strRecv = self.ByteToStr(data)
                 self.q.put(strRecv)
                 # print("Recv:", strRecv)
 
@@ -68,7 +74,7 @@ class simSerial(threading.Thread):
     # 端口，GNU / Linux上的/ dev / ttyUSB0 等 或 Windows上的 COM3 等
     # 波特率，标准值之一：50,75,110,134,150,200,300,600,1200,1800,2400,4800,9600,19200,38400,57600,115200
     # 超时设置,None：永远等待操作，0为立即返回请求结果，其他值为等待超时时间(单位为秒）
-    def DOpenPort(self, portx, bps, timeout=1):
+    def DOpenPort(self, portx, bps, timeout=1, _type='hex'):
         ret = False
         try:
             # 打开串口，并得到串口对象
@@ -76,10 +82,12 @@ class simSerial(threading.Thread):
             # 判断是否打开成功
             if (ser.is_open):
                 ret = True
-                threading.Thread(target=self.ReadDatas, args=(ser,)).start()
+                bytetimeout = 2400 * 0.08 / int(bps, 10)
+                threading.Thread(target=self.ReadDatas, args=(ser, bytetimeout, _type)).start()
+                return ret, ser
         except Exception as e:
             print("---异常---：", e)
-        return ret, ser
+            return ret, None
 
     # 关闭串口
     def DColsePort(self, ser):
