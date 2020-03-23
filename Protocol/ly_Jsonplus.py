@@ -77,7 +77,7 @@ def JsonDealFrame(recvframe, senddata, answer):
             # 1： 门限内相等
             # -1： 不判断
             if threshold == 0:
-                if answer['expectanswer'] == j:
+                if answer['expectanswer'][i] == j:
                     answer['answerresult'][i] = 'ok'
                 else:
                     answer['answerresult'][i] = 'error'

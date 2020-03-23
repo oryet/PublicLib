@@ -12,7 +12,11 @@ class simSerial(threading.Thread):
         return ''.join(["%02X" % x for x in bins]).strip()
 
     def ByteToStr(self, bins):
-        return str(bins, encoding='utf-8')
+        try:
+            ret = str(bins, encoding='utf-8')
+        except:
+            ret = None
+        return ret
 
     def onRecvData(self, data):
         try:
@@ -67,7 +71,9 @@ class simSerial(threading.Thread):
                     strRecv = self.ByteToHex(data)
                 else:
                     strRecv = self.ByteToStr(data)
-                self.q.put(strRecv)
+
+                if strRecv != None:
+                    self.q.put(strRecv)
                 # print("Recv:", strRecv)
 
     # 打开串口
