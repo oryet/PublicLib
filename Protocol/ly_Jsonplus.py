@@ -47,6 +47,7 @@ def IsJsonFrame(dictdata):
 #      answer result
 #  int threshold
 def JsonDealFrame(recvframe, senddata, answer):
+    answer['answerresult'] = {}
     if not IsJsonFrame(recvframe) or not IsJsonFrame(senddata):
         answer['result'] = 'frame error'
         return

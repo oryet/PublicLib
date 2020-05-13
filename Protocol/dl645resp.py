@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('../')
 from PublicLib.public import calcCheckSum
 import PublicLib.public as pfun
@@ -23,9 +24,6 @@ MIN_LEN_645FRAME = 24  # 12
 HEAD_FRAME = 'FEFEFEFE'
 
 
-
-
-
 def dl645_dealframe(frame):
     frame = frame.replace(' ', '')
     if len(frame) < MIN_LEN_645FRAME:
@@ -41,7 +39,7 @@ def dl645_dealframe(frame):
                 checkSum = checkSum[-2:]
                 checkSum = checkSum.upper()
                 if checkSum == frame[frameLen + 2:frameLen + 4] and \
-                                frame[frameLen + 4:frameLen + 6] == '16':
+                        frame[frameLen + 4:frameLen + 6] == '16':
                     addr = frame[i + POS_64507_ADDR:i + POS_64507_ADDR + 12].upper()
                     dt['addr'] = pfun._strReverse(addr)
                     # dt['ctrl'] = frame[i + POS_64507_CTRL:i + POS_64507_CTRL + 2]
@@ -159,19 +157,12 @@ def dl645_clearmeter():
     pass
 
 
-
-
-
 # def dl645_readdemand():
 #     pass
 
 
-
-
 def dl645_readevent():
     pass
-
-
 
 
 if __name__ == '__main__':
@@ -179,14 +170,14 @@ if __name__ == '__main__':
     from PublicLib.ACModule.simRTC import simrtc
 
     mtr = meter485()
-    mtr.addmeter(1,3)
+    mtr.addmeter(1, 3)
     mtr.run(3600)
     mtr.run(3600)
 
     # frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 32 35 33 4b 16'
     # frame = 'FE FE FE FE 68 01 00 00 00 50 48 68 11 04 33 33 37 35 50 16'
     # frame = '68 01 00 00 00 50 48 68 11 04 33 32 34 35 4C 16'
-    #frame = 'FE FE FE FE 68 AA AA AA AA AA AA 68 11 04 33 33 39 38 B8 16 '
+    # frame = 'FE FE FE FE 68 AA AA AA AA AA AA 68 11 04 33 33 39 38 B8 16 '
     frame = '68230100001523681104333337351316'
     ret, dt = dl645_dealframe(frame)
     print(ret, dt)
