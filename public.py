@@ -1,6 +1,7 @@
 import json
 import logging
 import logging.config
+import configparser
 
 # CRC16/IBM x16 + x15 + x2 + 1
 def crc16str(base, x, invert):
@@ -53,6 +54,8 @@ def HexToByte( hexStr ):
     """
     return bytes.fromhex(hexStr)
 
+
+
 # 校验计算函数
 def calcCheckSum(frame):
     checkSum = 0
@@ -90,3 +93,13 @@ def loadDefaultSettings(configfile):
             return defaultJsonConfig
 
 
+def loadIniSettings(configfile):
+    try:
+        # 加载现有配置文件
+        conf = configparser.ConfigParser()
+        conf.read(configfile, encoding="utf-8-sig")  # 此处是utf-8-sig，而不是utf-8
+    finally:
+        return conf
+
+if __name__ == '__main__':
+    pass
