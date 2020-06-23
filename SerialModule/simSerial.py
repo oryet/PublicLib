@@ -27,6 +27,21 @@ class simSerial(threading.Thread):
             data = None
             return data
 
+
+    def searchSerialPort(self):
+        ''' Search the valid serial port '''
+        ports = []
+        for i in range(100):
+            port = 'COM' + str(i + 1)
+            try:
+                s = serial.Serial(port)
+                if s.isOpen():
+                    s.close()
+                ports.append(port)
+            except Exception as msg:
+                pass
+        return ports
+
     def onSendData(self, ser, data=None, _type="hex"):
         # if not data:
         #     data = self.leTx.text()
