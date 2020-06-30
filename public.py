@@ -101,5 +101,15 @@ def loadIniSettings(configfile):
     finally:
         return conf
 
+
+def frameaddspace(frame):
+    # 字节间增加空格
+    framespace = ''
+    for i in range(0, len(frame), 2):
+        framespace += frame[i:i + 2] + ' '
+    return framespace
+
+
+
 if __name__ == '__main__':
     pass
