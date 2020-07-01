@@ -4,7 +4,12 @@ class ConnManage():
 
     def Insert(self, conn, ip, port, live):
         dictConnInfo = {'ip': ip, 'port': port, 'live': live}
-        self.connPool.append([conn, dictConnInfo])
+        if len(self.connPool) > 0:
+            for i in range(len(self.connPool)):
+                if self.connPool[i][0] != conn:
+                    self.connPool.append([conn, dictConnInfo])
+        else:
+            self.connPool.append([conn, dictConnInfo])
 
     def Delect(self, conn):
         for i in range(len(self.connPool)):
