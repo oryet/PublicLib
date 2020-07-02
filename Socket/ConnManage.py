@@ -6,8 +6,10 @@ class ConnManage():
         dictConnInfo = {'ip': ip, 'port': port, 'live': live}
         if len(self.connPool) > 0:
             for i in range(len(self.connPool)):
-                if self.connPool[i][0] != conn:
-                    self.connPool.append([conn, dictConnInfo])
+                if self.connPool[i][0] == conn:
+                    break
+            if i >= len(self.connPool):
+                self.connPool.append([conn, dictConnInfo])
         else:
             self.connPool.append([conn, dictConnInfo])
 
@@ -21,6 +23,7 @@ class ConnManage():
         for i in range(len(self.connPool)):
             if self.connPool[i][0] == conn:
                 self.connPool[i][1] = dictConnInfo
+                break
 
     def Live(self):
         for i in range(len(self.connPool)):
