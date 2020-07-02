@@ -51,7 +51,7 @@ class UdpServer():
                 con.Updata(addr, addr[0], addr[1], MAX_LIVE_TIME)
                 q.put(self.serverClass)
                 if self.serverClass["type"] == "json":
-                    if 'Login' in ret_str or 'Heart' in ret_str or 'Event' in ret_str:
+                    if 'Login' in ret_str or 'Heart' in ret_str or 'Event' in ret_str or 'Report' in ret_str:
                         # conn.sendall(bytes(ret_str + " ", encoding="utf-8"))
                         self.s.sendto(bytes(ret_str + " ", encoding="utf-8"), addr)
                 elif self.serverClass["type"] == "hex":
@@ -105,13 +105,25 @@ def GetPoolAddrList():
 
 if __name__ == '__main__':
     import threading
-    ADDRESS = ('192.168.127.16', 8888)  # 绑定地址
+    import logging
+    from PublicLib import public as pub
+
+    pub.loggingConfig('logging.conf')
+    logger = logging.getLogger('socketServerUdp')
+
+
+    ADDRESS = ('192.168.127.16', 50215)  # 绑定地址
+
+    ip = input('please enter ip:')
+    port = input('please enter port:')
+    ADDRESS = (ip, int(port, 10))  # 绑定地址
+
     udps = UdpServer()
     qRecv = queue.Queue()
 
     udpserver = threading.Thread(target=udps.handle, args=(ADDRESS))
     udpserver.start()
-    tmonitor = threading.Thread(target=ServerMonitor, args=(qRecv, None))
+    tmonitor = threading.Thread(target=ServerMonitor, args=(qRecv, logger))
     tmonitor.start()
 
     cnt = 0
@@ -121,7 +133,9 @@ if __name__ == '__main__':
         if not qRecv.empty():
             recv = qRecv.get()
             print(recv)
+            logger.info(recv)
 
+        '''
         if cnt % 100 == 0:
             addr = con.GetConn(0)
             try:
@@ -130,3 +144,4 @@ if __name__ == '__main__':
                 udps.SocketSend(0, data)
             except:
                 pass
+        '''
