@@ -113,7 +113,7 @@ class simSerial(threading.Thread):
             # 判断是否打开成功
             if ser.is_open:
                 ret = True
-                bytetimeout = 2400 * 0.08 / int(bps, 10)
+                bytetimeout = 8*20 / int(bps, 10)
                 threading.Thread(target=self.ReadDatas, args=(ser, bytetimeout, _type)).start()
                 self.beopen = True
                 return ret, ser
