@@ -7,6 +7,7 @@ import time
 class simSerial(threading.Thread):
     def __init__(self):
         self.q = queue.Queue()
+        self.beopen = False
 
     def ByteToHex(self, bins):
         try:
@@ -75,6 +76,9 @@ class simSerial(threading.Thread):
         while True:
             data = ser.read(1)
             time.sleep(0.02)
+            if self.beopen == False:
+                self.q.put('') # 空消息，触发接收监控停止
+                return
             if data == b'':
                 continue
             while True:
@@ -107,10 +111,11 @@ class simSerial(threading.Thread):
             # 打开串口，并得到串口对象
             ser = serial.Serial(portx, bps, 8, 'E', 1, timeout=timeout)
             # 判断是否打开成功
-            if (ser.is_open):
+            if ser.is_open:
                 ret = True
                 bytetimeout = 2400 * 0.08 / int(bps, 10)
                 threading.Thread(target=self.ReadDatas, args=(ser, bytetimeout, _type)).start()
+                self.beopen = True
                 return ret, ser
         except Exception as e:
             print("---异常---：", e)
@@ -118,8 +123,7 @@ class simSerial(threading.Thread):
 
     # 关闭串口
     def DColsePort(self, ser):
-        global BOOL
-        BOOL = False
+        self.beopen = False
         ser.close()
 
     # 写数据
