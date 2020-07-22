@@ -50,12 +50,19 @@ def dl645_readenergy(DI, eng, pn=3):
         elif 0 <= DI[2] <= 8:
             e = [eng[0][4][DI[2]] + eng[0][5][DI[2]]]
 
-    elif DI[1] == 0x15 and pn == 3:  # (当前)A相正向有功电能
+    elif DI[1] == 0x15:              # (当前)A相正向有功电能
         e = eng[1][0][:1]
     elif DI[1] == 0x29 and pn == 3:  # (当前)B相正向有功电能
         e = eng[2][0][:1]
     elif DI[1] == 0x3d and pn == 3:  # (当前)C相正向有功电能
         e = eng[3][0][:1]
+
+    elif DI[1] == 0x16:              # (当前)A相反向有功电能
+        e = eng[1][1][:1]
+    elif DI[1] == 0x2a and pn == 3:  # (当前)B相反向有功电能
+        e = eng[2][1][:1]
+    elif DI[1] == 0x3e and pn == 3:  # (当前)C相反向有功电能
+        e = eng[3][1][:1]
 
     strdata = ''
     for i in range(len(e)):
