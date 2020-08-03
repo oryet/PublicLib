@@ -1,4 +1,4 @@
-from PublicLib.public import _strReverse
+import PublicLib.public as pfun
 
 
 def Mex_CmdParse(c, dt):
@@ -8,10 +8,8 @@ def Mex_CmdParse(c, dt):
 
     if cmd & 0x40:
         dt['prm'] = 1
-        print('下行帧')
     else:
         dt['prm'] = 0
-        print('上行帧')
 
     if cmd & 0x01:
         dt['cmd'] = 1
@@ -36,16 +34,14 @@ def Mex_DataLenParse(d, dt):
     a = int(d[:2], 16)
     if a & 0x80:
         a &= 0x7F
-        sd = _strReverse(d[2:a*2])  # 长度域字符串倒序
+        sd = pfun._strReverse(d[2:a * 2])  # 长度域字符串倒序
         dl = dt['datalen'] = int(sd, 16)
-        dl = dl*2 +2
+        dl = dl * 2 + 2
     else:
         dt['datalen'] = a
         dl = 2
     return dl
 
-def Mex_DataParse(d, dt):
-    pass
 
 # 解帧
 def Mex_GetFrame(s, dt):
@@ -53,6 +49,7 @@ def Mex_GetFrame(s, dt):
     if n >= 0:
         dt['frame'] = l = s[n:]  # 获取数据帧
     else:
+        dt['err'] = 'head err'
         return
 
     Mex_CmdParse(l[2:4], dt)
@@ -66,7 +63,19 @@ def Mex_GetFrame(s, dt):
     n = Mex_DataLenParse(l, dt)
     l = l[n:]
 
-    print(dt, l)
+    # 计算CRC
+    calcCrc = "0000" + pfun.crc16hex(0xFFFF, l[:-6], True)
+    calcCrc = calcCrc[-4:]
+    n = dt['datalen'] * 2
+    frameCrc = l[n: n + 4].upper()
+    if calcCrc != frameCrc:
+        dt['err'] = 'crc err'
+        dt['ret'] = False
+        print(calcCrc, frameCrc)
+    else:
+        dt['ret'] = True
+
+    dt['data'] = l[:-6]
 
 
 if __name__ == '__main__':
@@ -77,4 +86,5 @@ if __name__ == '__main__':
     recvframe = recvframe.replace(' ', '')
 
     dt = {}
-    Mex_GetFrame(recvframe, dt)
+    Mex_GetFrame(sendframe, dt)
+    print(dt)
