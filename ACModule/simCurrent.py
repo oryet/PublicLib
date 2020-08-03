@@ -21,7 +21,7 @@ Q = 4
 CurRandCnt = 0
 
 TEST_EN = 0
-TEST_EN_POS = 1  # 正向
+TEST_EN_POS = 0  # 正向
 
 
 class ACsampling():
