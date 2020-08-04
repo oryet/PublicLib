@@ -36,9 +36,9 @@ def Mex_DataLenParse(d, dt):
     a = int(d[:2], 16)
     if a & 0x80:
         a &= 0x7F
-        sd = pfun._strReverse(d[2:a * 2])  # 长度域字符串倒序
-        dl = dt['datalen'] = int(sd, 16)
-        dl = dl * 2 + 2
+        sd = pfun._strReverse(d[2:a * 2 + 2])  # 长度域字符串倒序
+        dt['datalen'] = int(sd, 16)
+        dl = (a + 1) * 2
     else:
         dt['datalen'] = a
         dl = 2
@@ -95,7 +95,9 @@ def Mex_MakeDataLen(dt):
         s = hex(s)[-2:] + hex(dt['datalen']).replace('0x', '0000')[-2:]
     elif 0xFF < dt['datalen'] <= 0xFFFF:
         s = 0x82
-        s = hex(s)[-2:] + hex(dt['datalen']).replace('0x', '0000')[-4:]
+        n = hex(dt['datalen']).replace('0x', '0000')[-4:]
+        n = pfun._strReverse(n)
+        s = hex(s)[-2:] + n
     else:
         s = hex(dt['datalen']).replace('0x', '0000')[-2:]
     return s
@@ -134,5 +136,15 @@ if __name__ == '__main__':
     Mex_GetFrame(recvframe, dt)
     print(dt)
 
+
+    # dt['addr'] = '123456789012'
+    # dt['addlen'] = int(len(dt['addr']) / 2)
+    # dt['data'] = dt['data']*122
+    # dt['datalen'] = int(len(dt['data']) / 2)
+
     s = Mex_MakeFrame(dt)
     print(s)
+
+    dt = {}
+    Mex_GetFrame(s, dt)
+    print(dt)
