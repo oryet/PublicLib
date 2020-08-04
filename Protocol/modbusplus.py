@@ -1,5 +1,7 @@
 import PublicLib.public as pfun
 
+sn = 0
+
 
 def Mex_CmdParse(c, dt):
     cmd = int(c[:2], 16)
@@ -78,6 +80,49 @@ def Mex_GetFrame(s, dt):
     dt['data'] = l[:-6]
 
 
+def Mex_MakeAddr(dt):
+    if dt['addlen'] > 1:
+        s = 0x80 + dt['addlen']
+        s = hex(s)[-2:] + dt['addr']
+    else:
+        s = dt['addr']
+    return s
+
+
+def Mex_MakeDataLen(dt):
+    if 0x80 < dt['datalen'] <= 0xFF:
+        s = 0x81
+        s = hex(s)[-2:] + hex(dt['datalen']).replace('0x', '0000')[-2:]
+    elif 0xFF < dt['datalen'] <= 0xFFFF:
+        s = 0x82
+        s = hex(s)[-2:] + hex(dt['datalen']).replace('0x', '0000')[-4:]
+    else:
+        s = hex(dt['datalen']).replace('0x', '0000')[-2:]
+    return s
+
+
+# 组帧
+def Mex_MakeFrame(dt):
+    s = '68'
+    s += hex(dt['cmd']).replace('0x', '00')[-2:]
+    try:
+        s += dt['sn']
+    except:
+        s += hex(sn).replace('0x', '00')[-2:]
+
+    s += Mex_MakeAddr(dt)
+
+    s += Mex_MakeDataLen(dt)
+
+    s += dt['data']
+
+    s += pfun.crc16hex(0xFFFF, dt['data'], True).replace('0x', '0000')[-4:]
+
+    s += '16'
+
+    return s
+
+
 if __name__ == '__main__':
     sendframe = '68 01 45 83 11 22 33 03 01 00 05 e0 03 16'
     recvframe = '68 01 45 83 11 22 33 0d 01 00 05 01 00 02 00 03 00 04 00 05 00 c2 e9 16'
@@ -86,5 +131,8 @@ if __name__ == '__main__':
     recvframe = recvframe.replace(' ', '')
 
     dt = {}
-    Mex_GetFrame(sendframe, dt)
+    Mex_GetFrame(recvframe, dt)
     print(dt)
+
+    s = Mex_MakeFrame(dt)
+    print(s)
