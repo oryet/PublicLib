@@ -8,15 +8,9 @@ def Mex_CmdParse(c, dt):
     if cmd & 0x80:
         print('有后续帧')
 
-    if cmd & 0x40:
-        dt['prm'] = 1
-    else:
-        dt['prm'] = 0
+    dt['dev'] = (cmd >> 5) & 0x03
 
-    if cmd & 0x01:
-        dt['cmd'] = 1
-    elif cmd & 0x02:
-        dt['cmd'] = 1
+    dt['cmd'] = cmd & 0x07
 
 
 def Mex_AddParse(addr, dt):
@@ -106,7 +100,8 @@ def Mex_MakeDataLen(dt):
 # 组帧
 def Mex_MakeFrame(dt):
     s = '68'
-    s += hex(dt['cmd']).replace('0x', '00')[-2:]
+    c = (dt['dev'] << 5) | dt['cmd']
+    s += hex(c).replace('0x', '00')[-2:]
     try:
         s += dt['sn']
     except:
@@ -126,8 +121,8 @@ def Mex_MakeFrame(dt):
 
 
 if __name__ == '__main__':
-    sendframe = '68 01 45 83 11 22 33 03 01 00 05 e0 03 16'
-    recvframe = '68 01 45 83 11 22 33 0d 01 00 05 01 00 02 00 03 00 04 00 05 00 c2 e9 16'
+    sendframe = '68 21 45 83 11 22 33 03 01 00 05 e0 03 16'
+    recvframe = '68 21 45 83 11 22 33 0d 01 00 05 01 00 02 00 03 00 04 00 05 00 c2 e9 16'
 
     sendframe = sendframe.replace(' ', '')
     recvframe = recvframe.replace(' ', '')
