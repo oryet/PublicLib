@@ -77,9 +77,9 @@ def Mex_GetFrame(s, dt):
 def Mex_MakeAddr(dt):
     if dt['addlen'] > 1:
         s = 0x80 + dt['addlen']
-        s = hex(s)[-2:] + dt['addr']
+        s = hex(s)[-2:] + pfun.strReverse(dt['addr'])
     else:
-        s = dt['addr']
+        s = pfun.strReverse(dt['addr'])
     return s
 
 

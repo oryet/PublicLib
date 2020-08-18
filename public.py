@@ -14,8 +14,8 @@ def crc16str(base, x, invert):
             a >>= 1
             if last == 1:
                 a ^= b
-    s = hex(a).upper()
-    return s[4:6] + s[2:4] if invert == True else s[2:4] + s[4:6]
+    s = hex(a).upper().replace('0X', '0000')
+    return s[-2:] + s[-4:-2] if invert == True else s[-4:-2] + s[-2:]
 
 # CRC16/IBM x16 + x15 + x2 + 1
 def crc16hex(base, x, invert):
@@ -28,12 +28,19 @@ def crc16hex(base, x, invert):
             a >>= 1
             if last == 1:
                 a ^= b
-    s = hex(a).upper()
-    return s[4:6] + s[2:4] if invert == True else s[2:4] + s[4:6]
+    s = hex(a).upper().replace('0X', '0000')
+    return s[-2:] + s[-4:-2] if invert == True else s[-4:-2] + s[-2:]
 
 
 # 字节倒序
 def _strReverse(value):
+    s = ""
+    for i in range(0, len(value), 2):
+        s = value[i:i + 2] + s
+    return s
+
+# 字节倒序
+def strReverse(value):
     s = ""
     for i in range(0, len(value), 2):
         s = value[i:i + 2] + s
