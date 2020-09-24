@@ -43,7 +43,8 @@ def Mex_DataLenParse(d, dt):
 def Mex_GetFrame(s, dt):
     n = s.find('68')
     if n >= 0:
-        dt['frame'] = l = s[n:]  # 获取数据帧
+        # dt['frame'] = l = s[n:]  # 获取数据帧
+        l = s[n:]  # 获取数据帧
     else:
         dt['err'] = 'head err'
         return
