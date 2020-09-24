@@ -46,6 +46,18 @@ def strReverse(value):
         s = value[i:i + 2] + s
     return s
 
+# 10进制字符串转16进制字符串
+def DecStr2HexStr(s, n):
+    try:
+        a = int(s, 10)
+    except:
+        a = 0
+    sa = hex(a)
+    n = 2*n
+    sa = sa.replace('0x','00000000')[-n:]
+    sa = strReverse(sa)
+    return sa
+
 # ByteToHex的转换
 def ByteToHex( bins ):
     """

@@ -37,9 +37,11 @@ class upgradeMakeFrame():
         data = "04A00101"
         value = ""
         List = dict(zip([data], [value]))
-        VList = []
-        VList += ["Read"]
-        VList += [List]
+        VList = {}
+        # VList += ["Read"]
+        # VList += [List]
+        VList['Cmd'] = "Read"
+        VList['DataValue'] = List
         senddata = prtl2Make(prtl, VList)
         return senddata
 
@@ -51,9 +53,12 @@ class upgradeMakeFrame():
         value =self. FILE_MANUIDEN + "#" + self.FILE_DEV_TYPE + "#" + self.FILE_PACK_NUM + "#000" + sindex  # 索引号从1开始      厂家标识 + 设备类型 + 总包数 + 当前包序号 + 单包数据单元
 
         List = dict(zip([data], [value]))
-        VList = []
-        VList += ["Read"]
-        VList += [List]
+        # VList = []
+        # VList += ["Read"]
+        # VList += [List]
+        VList = {}
+        VList['Cmd'] = "Read"
+        VList['DataValue'] = List
         senddata = prtl2Make(prtl, VList)
         return senddata
 
@@ -65,9 +70,12 @@ class upgradeMakeFrame():
         # value = "28210000#18121716#01010002#01000000#0001f9c1#03f4#80#75d3#0000"
         value = "28210000#19042515#01000099#01010000#" + self.FILE_LEN + "#" +  self.FILE_PACK_NUM + "#" + "80" + "#" +  self.FILE_CRC + "#" + "0000"
         List = dict(zip([data], [value]))
-        VList = []
-        VList += ["UpDate"]
-        VList += [List]
+        # VList = []
+        # VList += ["UpDate"]
+        # VList += [List]
+        VList = {}
+        VList['Cmd'] = "UpDate"
+        VList['DataValue'] = List
         senddata = prtl2Make(prtl, VList)
         return senddata
 
@@ -81,8 +89,11 @@ class upgradeMakeFrame():
         # print(value)
         value = self.FILE_MANUIDEN + "#" + self.FILE_DEV_TYPE + "#" + self.FILE_PACK_NUM + "#" + sindex + "#" + value  # 字节倒序
         List = dict(zip([data], [value]))
-        VList = []
-        VList += ["UpDate"]
-        VList += [List]
+        # VList = []
+        # VList += ["UpDate"]
+        # VList += [List]
+        VList = {}
+        VList['Cmd'] = "UpDate"
+        VList['DataValue'] = List
         senddata = prtl2Make(prtl, VList)
         return senddata

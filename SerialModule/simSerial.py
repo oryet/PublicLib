@@ -133,7 +133,7 @@ class simSerial(threading.Thread):
         try:
             result = ser.write(text)  # 写数据
         except:
-            pass
+            result = ser.write(text.encode("utf-8"))  # 写数据
         return result
 
     # 读数据
@@ -145,10 +145,12 @@ class simSerial(threading.Thread):
 
 
 if __name__ == '__main__':
+    from PublicLib.public import *
     ss = simSerial()
 
     cfg = {'port':'COM10', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
-    ret, ser = ss.DOpenPort(cfg['port'], cfg['baud'],cfg['timeout'],'str')
+    ret, ser = ss.DOpenPort(cfg['port'], cfg['baud'],cfg['timeout'],'hex')
     while ret:
         str = ss.DReadPort()  # 读串口数据
-        print(str)
+        s = frameaddspace(str)
+        ss.onSendData(ser, s, 'hex')
