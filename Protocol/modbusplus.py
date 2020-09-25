@@ -27,7 +27,10 @@ def Mex_AddParse(addr, dt):
 
 
 def Mex_DataLenParse(d, dt):
-    a = int(d[:2], 16)
+    try:
+        a = int(d[:2], 16)
+    except:
+        a = 0
     if a & 0x80:
         a &= 0x7F
         sd = pfun._strReverse(d[2:a * 2 + 2])  # 长度域字符串倒序
