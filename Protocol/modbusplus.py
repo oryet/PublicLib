@@ -8,7 +8,10 @@ def Mex_CmdParse(c, dt):
     if cmd & 0x80:
         print('有后续帧')
 
-    dt['dev'] = (cmd >> 5) & 0x03
+    if cmd & 0x40:
+        print('主动发起帧')
+
+    dt['dev'] = (cmd >> 3) & 0x03
 
     dt['cmd'] = cmd & 0x07
 
@@ -106,7 +109,7 @@ def Mex_MakeDataLen(dt):
 # 组帧
 def Mex_MakeFrame(dt):
     s = '68'
-    c = (dt['dev'] << 5) | dt['cmd']
+    c = (dt['dev'] << 3) | dt['cmd'] | 0x40   # 接收帧设备类型, 命令字, 主动发起
     s += hex(c).replace('0x', '00')[-2:]
     try:
         s += dt['sn']
