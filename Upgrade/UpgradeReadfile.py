@@ -12,9 +12,11 @@ class UpgradeReadfile():
         self.packnum = 0
         self.flist = []
 
+    def ReadBinFile(self, file):
         # 打开文件
         # file = u'F:\Work\TLY2826 Cat1\升级测试程序\IotMeter.bin'
-        file = u'F:\\Work\\软件提交\\TLY2821\\升级包-200911\\TLY2821-03-UP0000-200911-00.bin'
+        if file == None:
+            file = u'F:\\Work\\软件提交\\TLY2821\\升级包-200911\\TLY2821-03-UP0000-200911-00.bin'
         fo = open(file, "rb")  # 读取二进制文件用 rb
         print ("文件名为: ", fo.name)
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     file = u'F:\Work\软件提交\TLY2821\V1.0.0.1\TLY2821-00-SW0000-190409-01\TLY2821-update-V01000099-190409.bin'
     filelen = 0
 
-    rf = UpgradeReadfile(file)
+    rf = UpgradeReadfile()
 
     # 读升级bin文件
     rf.ReadBinFile(file)

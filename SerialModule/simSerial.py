@@ -8,6 +8,13 @@ class simSerial(threading.Thread):
     def __init__(self):
         self.q = queue.Queue()
         self.beopen = False
+        self.dataType = 'Hex'
+
+    def SetDataType(self, dataType):
+        if dataType == 'Hex':
+            self.dataType = 'Hex'
+        else:
+            self.dataType = 'Str'
 
     def ByteToHex(self, bins):
         try:
@@ -90,7 +97,7 @@ class simSerial(threading.Thread):
                     quit = True
                     break
             if quit:
-                if _type == 'hex':
+                if self.dataType == 'hex':
                     strRecv = self.ByteToHex(data)
                 else:
                     strRecv = self.ByteToStr(data)
@@ -148,7 +155,7 @@ if __name__ == '__main__':
     from PublicLib.public import *
     ss = simSerial()
 
-    cfg = {'port':'COM10', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+    cfg = {'port':'COM1', 'baud':'2400',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
     ret, ser = ss.DOpenPort(cfg['port'], cfg['baud'],cfg['timeout'],'hex')
     while ret:
         str = ss.DReadPort()  # 读串口数据
