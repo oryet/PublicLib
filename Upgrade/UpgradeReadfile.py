@@ -16,7 +16,7 @@ class UpgradeReadfile():
         # 打开文件
         # file = u'F:\Work\TLY2826 Cat1\升级测试程序\IotMeter.bin'
         if file == None:
-            file = u'F:\\Work\\软件提交\\TLY2821\\升级包-200911\\TLY2821-03-UP0000-200911-00.bin'
+            file = u'F:\\Work\\软件提交\\TLY2821\\TLY2821-03-UP0000-201211-00\\TLY2821-03-UP0000-201211-00.bin'
         fo = open(file, "rb")  # 读取二进制文件用 rb
         print ("文件名为: ", fo.name)
 
