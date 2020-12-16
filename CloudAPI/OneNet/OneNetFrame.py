@@ -138,11 +138,12 @@ def getcurinfo(con, rlist, devlist, prelist=None, keyword=None, log=None):
             except:
                 pass
 
-def devListSend(con, rlist, devlist, nl, sendstr=None, log=None):
+def devListSend(con, rlist, devlist, sendstr=None, log=None):
     # 获取设备信息
     # for i in range(len(devlist)):
-    for i in nl:
-        ret, deviceinfo = getdevinfo(rlist[i], devlist[i])
+    for r in rlist:
+        i = r[0]
+        ret, deviceinfo = getdevinfo(r[1], devlist[i])
 
         if ret is True and deviceinfo["online"]:
             val = "{'Len':'312','Cmd':'Read','SN':'1','DataTime':'180706121314','CRC':'FFFF','DataValue':{'04A50300':'','04A50301':'','04A20201':'','04A50302':'','04A50303':''}}"  # object
