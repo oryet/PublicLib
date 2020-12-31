@@ -20,8 +20,9 @@ FILE_CRC = "1a4c"
 
 
 class upgradeMakeFrame():
-    def __init__(self):
-        filename = u'F:\\Work\\软件提交\\TLY2821\\TLY2821-03-UP0000-201211-00\\TLY2821-03-UP0000-201211-00.bin'
+    def __init__(self, filename=None):
+        if filename == None:
+            filename = u'F:\\Work\\软件提交\\TLY2821\\TLY2821-03-UP0000-201211-00\\TLY2821-03-UP0000-201211-00.bin'
         rf = UpgradeReadfile()
         rf.ReadBinFile(filename)
         self.FILE_MANUIDEN = "594C"
