@@ -31,7 +31,7 @@ class OneNetApi():
         s = requests.session()
         if method == 'POST':
             if params != None and jdata != None:
-                res = s.post(url, headers=self.header, data=jdata, params = params)
+                res = s.post(url, headers=self.header, data = jdata, params = params)
             elif jdata != None:
                 res = s.post(url, headers = self.header, data = jdata)
             else:
@@ -199,11 +199,15 @@ class OneNetApi():
     ########### 及时命令 #############
     # 及时命令 写设备资源
     # (self, url, method, jdata = None, params = None)
-    def nbiot_write(self, nbiot, params):
-        if nbiot == None or params == None:
+    def nbiot_write(self, nbiot, params, api = None):
+        if api == None:
+            api = "/nbiot"
+        if params == None:
             return 0
-        api = "/nbiot"
-        jdata = json.dumps(nbiot)
+        if nbiot != None:
+            jdata = json.dumps(nbiot)
+        else:
+            jdata = None
         return self._call(api, 'POST', jdata = jdata, params = params)
 
     ########### 触发器操作 #############

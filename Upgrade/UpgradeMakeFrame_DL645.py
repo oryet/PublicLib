@@ -6,26 +6,14 @@ from PublicLib.Upgrade.UpgradeReadfile import UpgradeReadfile
 import PublicLib.public as pfun
 from PublicLib.Protocol.dl645 import *
 
-'''
-FILE_MANUIDEN = "594C"
-FILE_DEV_TYPE = "03"
-FILE_LEN = 0x000173ed
-if FILE_LEN%128 == 0:
-    FILE_PACK_NUM = hex((int)(FILE_LEN / 128))
-else:
-    FILE_PACK_NUM = hex((int)(FILE_LEN / 128) + 1)
-FILE_PACK_NUM = str(FILE_PACK_NUM).replace("0x", "0000")[-4:]
-FILE_LEN = hex(FILE_LEN).replace("0x", "00000000")[-8:]
-FILE_CRC = "1a4c"
-'''
-
 
 class upgradeMakeFrame():
     def __init__(self, filename=None):
         if filename == None:
             filename = u'F:\\Work\\软件提交\\TLY2821\\TLY2821-03-UP0000-201211-00\\TLY2821-03-UP0000-201211-00.bin'
         rf = UpgradeReadfile()
-        rf.ReadBinFile(filename, 128)
+        self.packlen = 240
+        rf.ReadBinFile(filename, self.packlen)
         self.FILE_MANUIDEN = "594C"
         self.FILE_DEV_TYPE = "03"
         self.flen = rf.flen
@@ -65,7 +53,7 @@ class upgradeMakeFrame():
         data += pfun.strReverse(self.FILEINFO['dwHWVersion'])
         data += pfun.strReverse(self.FILE_LEN)
         data += pfun.strReverse(self.FILE_PACK_NUM)
-        data += '80'
+        data += hex(self.packlen).replace("0x", "00")[-2:]
         data += pfun.strReverse(self.FILE_CRC)
         data += '00'
         data += '00'

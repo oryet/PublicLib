@@ -89,13 +89,14 @@ class UpgradeReadfile():
         return ''.join(["%02X" % x for x in bins]).strip()
 
 if __name__ == '__main__':
-    file = u'F:\Work\软件提交\TLY2821\V1.0.0.1\TLY2821-00-SW0000-190409-01\TLY2821-update-V01000099-190409.bin'
+    # file = u'F:\Work\软件提交\TLY2821\V1.0.0.1\TLY2821-00-SW0000-190409-01\TLY2821-update-V01000099-190409.bin'
+    file = u'F:\\Work\\软件提交\\TLY2821\\TLY2821-03-UP0000-201211-00\\TLY2821-03-UP0000-201211-00.bin'
     filelen = 0
 
     rf = UpgradeReadfile()
 
     # 读升级bin文件
-    rf.ReadBinFile(file)
+    rf.ReadBinFile(file, 200)
     #for i in range(len(rf.flist)):
     #    filelen += len(rf.flist[i])
     print(hex(rf.flen), rf.fcrc, rf.packnum, rf.FILEINFO)

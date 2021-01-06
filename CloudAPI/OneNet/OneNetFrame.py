@@ -13,13 +13,21 @@ def onenet_paresdata(res):
 
     # 将json对象转换成python对象
     data_python = json.loads(data)
-    if data_python["errno"] == 0 and data_python["error"] == "succ":
-        if 'data' in data_python:
-            return True, data_python["data"]
-        else:
-            return True, None
+    if "errno" in data_python:
+        err = data_python["errno"]
     else:
+        print(__file__, data_python)
         return False, None
+    if isinstance(err, int):
+        if err == 0:
+            if "succ" in data_python["error"]:
+                if 'data' in data_python:
+                    return True, data_python["data"]
+                else:
+                    print(__file__, data_python)
+                    return True, None
+    print(__file__, data_python)
+    return False, None
 
 def onenet_contjson(content):
     jsondata = bytes.decode(content)
@@ -53,12 +61,39 @@ def onenet_makeframe(con, deviceinfo, val):
     res4 = con.nbiot_write(nbiot_data, nbiot_url)
     return (res4.content)
 
+
+def onenet_makecmd(con, deviceinfo, val):
+    # nbiot_url = {"imei": device_imei, "obj_id": obj_id, "obj_inst_id": obj_inst_id, "mode": mode}  # params
+    # '3308_0_5750'
+    # nbiot_url = {"imei": deviceinfo["rg_id"], "obj_id": deviceinfo["datastreams"][0]["id"][:4],
+    #              "obj_inst_id": deviceinfo["datastreams"][0]["id"][5:6], "mode": 2}  # params
+    nbiot_url = {"imei": deviceinfo["rg_id"], "obj_id": '3328',
+                 "obj_inst_id": '0', "res_id": 5605}  # params
+
+    nbiot_data = {"args": val}  # data
+
+    api = "/nbiot/execute"
+
+    res4 = con.nbiot_write(nbiot_data, nbiot_url, api)
+    return (res4.content)
+
+
 def onenet_senddata(con, deviceinfo, val):
     if deviceinfo["online"]:
         # 发送数据
         # 其中datastream_id等于obj_id, obj_inst_id, res_id，如obj_id:3200，obj_inst_id:0，res_id:5501，那么这个datastream_id就为3200_0_5501。 ['3308_0_5750']
         # val = "{'Len':'312','Cmd':'Read','SN':'1','DataTime':'180706121314','CRC':'FFFF','DataValue':{'04A50300':'','04A50301':'','04A20201':'','04A50302':'','04A50303':''}}"  # object
         res = onenet_makeframe(con, deviceinfo, val)
+        ret, data = onenet_paresdata(res)
+        return ret
+    return None
+
+def onenet_sendcmd(con, deviceinfo, val):
+    if deviceinfo["online"]:
+        # 发送数据
+        # 其中datastream_id等于obj_id, obj_inst_id, res_id，如obj_id:3200，obj_inst_id:0，res_id:5501，那么这个datastream_id就为3200_0_5501。 ['3308_0_5750']
+        # val = "{'Len':'312','Cmd':'Read','SN':'1','DataTime':'180706121314','CRC':'FFFF','DataValue':{'04A50300':'','04A50301':'','04A20201':'','04A50302':'','04A50303':''}}"  # object
+        res = onenet_makecmd(con, deviceinfo, val)
         ret, data = onenet_paresdata(res)
         return ret
     return None
