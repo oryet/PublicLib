@@ -7,7 +7,12 @@ def str2hex(strdata, en=0):
         s = strdata[j:j + 2]
         if en:
             try:
-                s = int(s, 16) - 0x33
+                # s = int(s, 16) - 0x33
+                d = int(s, 16)
+                if d >= 0x33:
+                    s = d - 0x33
+                else:
+                    s = d + 0x100 - 0x33
             except:
                 pass
         else:
