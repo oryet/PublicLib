@@ -1,9 +1,23 @@
 import sys
 sys.path.append("..")
-import PublicLib.Protocol.ly_Json as jsonframe
+from PublicLib.Protocol.dl645resp import *
+from PublicLib.Protocol.dl645format import *
 import time
 import PublicLib.public as pfun
 
+
+def upgradeRecvDataToMap(bmapstr, uplist):
+    bmapstr = pfun._strReverse(bmapstr)
+    for i in range(0, len(bmapstr), 2):
+        b = bmapstr[i:i + 2]
+        n = int(b, 16)
+        for j in range(8):
+            if n & (1 << j):
+                uplist["bmap"][i * 4 + j] = 1
+            else:
+                uplist["bmap"][i * 4 + j] = 0
+
+'''
 def upgradeRecvDataToMap(index, bmapstr, self):
     bmapstr = pfun._strReverse(bmapstr)
     for i in range(0, len(bmapstr), 2):
@@ -14,58 +28,62 @@ def upgradeRecvDataToMap(index, bmapstr, self):
                 self.uplist["bmap"][index*512 + i * 4 + j] = 1
             else:
                 self.uplist["bmap"][index*512 + i * 4 + j] = 0
+'''
 
-
-def upgradeSendData(self):
-    for i in range(len(self.uplist["bmap"])):
-        if self.uplist["bmap"][i] != 1:
+def upgradeSendData(uplist):
+    for i in range(len(uplist["bmap"])):
+        if uplist["bmap"][i] != 1:
             # print(i, uplist["bmap"][i])
-            self.uplist["bmap"][i] = 1
+            uplist["bmap"][i] = 1
             return i
     return -1
 
 
-def upgradeDataProc(recv, self):
-    if isinstance(recv, dict):
-        data = recv
-        if 'ip' in data and 'port' in data:
-            self.uplist["ip"] = data["ip"]
-            self.uplist["port"] = data["port"]
-        if 'recvData' in data:
-            data = data["recvData"]
-    elif isinstance(recv, str):
-        data = jsonframe.subStrToJson(recv)
-        if "ip" and "port" in data:
-            self.uplist["ip"] = data["ip"]
-            self.uplist["port"] = data["port"]
-            if "DataTime" not in data["recvData"]:
-                return
-        data = data["recvData"]
-    else:
-        return
+def upgradeDataProc_DL645(recv, uplist):
+    ret, dt = dl645_dealframe(recv, False)
+    if ret:
+        strDI = pfun.strReverse(dt['data'][:8])
+        strData = pfun.strReverse(dt['data'][8:])
+        strDI = hex2str(str2hex(strDI, 1))
+        strData = hex2str(str2hex(strData, 1))
+        print('strDI:', strDI, 'strData:', strData)
 
-    if isinstance(data, str):
-        data = jsonframe.subStrToJson(data)
+        if strDI == '04a00501': # 查询漏包
+            upgradeRecvDataToMap(strData, uplist)
 
-    if "04A00503" in data["DataValue"]:
-        if data["DataValue"]["04A00503"][13:17] == "0001":
-            bstr = data["DataValue"]["04A00503"][18:]
-            upgradeRecvDataToMap(0, bstr, self)
-        elif data["DataValue"]["04A00503"][13:17] == "0002":
-            bstr = data["DataValue"]["04A00503"][18:]
-            upgradeRecvDataToMap(1, bstr, self)
+
 
 def upgradeRecvProc(self):
     while 1:
         time.sleep(1)
         while not self.qRecv.empty():
             recv = self.qRecv.get()
-            print(recv)
-            if recv is not None and 'linkNum' not in recv:
-                # upgradeDataProc(recv, self)
+            print('upgradeRecvProc recv:', recv)
+            if 'Len' in recv:
+                pass
+            elif 'HexStr' in recv:
+                upgradeDataProc_DL645(recv['HexStr'], self.uplist)
+            else:
                 pass
 
-def upgradeGetCurPackNum(self):
-    for i in range(len(self.uplist["bmap"])):
-        if self.uplist["bmap"][i] == 0:
+def upgradeGetCurPackNum(uplist):
+    for i in range(len(uplist["bmap"])):
+        if uplist["bmap"][i] == 0:
             return i
+
+if __name__ == '__main__':
+    # frame645 = '68AAAAAAAAAAAA6891C43438D337343333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333D816'
+    # frame645 = '68AAAAAAAAAAAA6891C43438D337C433333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333336816'
+    frame645 = '68AAAAAAAAAAAA6891C43438D337323232323633333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333D616'
+    bitmap = [0]*2048
+    uplist = {"ip": "", "port": "", "bmap": bitmap}
+    upgradeDataProc_DL645(frame645, uplist)
+
+    n = upgradeGetCurPackNum(uplist)
+    print('upgradeGetCurPackNum:', n)
+
+    for i in range(16):
+        upgradeSendData(uplist)
+
+    n = upgradeGetCurPackNum(uplist)
+    print('upgradeGetCurPackNum:', n)

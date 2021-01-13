@@ -34,8 +34,8 @@ def upgradeDataProc(recv, self):
         if 'recvData' in data:
             data = data["recvData"]
     elif isinstance(recv, str):
-        data = jsonframe.subStrToJson(recv)
-        if "ip" and "port" in data:
+        ret, data = jsonframe.subStrToJson(recv)
+        if ret and "ip" and "port" in data:
             self.uplist["ip"] = data["ip"]
             self.uplist["port"] = data["port"]
             if "DataTime" not in data["recvData"]:
@@ -45,9 +45,9 @@ def upgradeDataProc(recv, self):
         return
 
     if isinstance(data, str):
-        data = jsonframe.subStrToJson(data)
+        ret, data = jsonframe.subStrToJson(data)
 
-    if "04A00503" in data["DataValue"]:
+    if ret and "04A00503" in data["DataValue"]:
         if data["DataValue"]["04A00503"][13:17] == "0001":
             bstr = data["DataValue"]["04A00503"][18:]
             upgradeRecvDataToMap(0, bstr, self)

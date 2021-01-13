@@ -43,9 +43,12 @@ def onenet_contjson(content):
 
         recvtime = dic["at"]
         value = dic["value"]
-        value = subStrToJson(value)
+        ret, jsondata = subStrToJson(value)
         recvtimelist +=[recvtime]
-        valuelist += [value]
+        if ret:
+            valuelist += [jsondata]
+        else:
+            valuelist += [{"HexStr": jsondata}]
     return count,recvtimelist,valuelist
 
 
@@ -95,16 +98,68 @@ def onenet_sendcmd(con, deviceinfo, val):
         # val = "{'Len':'312','Cmd':'Read','SN':'1','DataTime':'180706121314','CRC':'FFFF','DataValue':{'04A50300':'','04A50301':'','04A20201':'','04A50302':'','04A50303':''}}"  # object
         res = onenet_makecmd(con, deviceinfo, val)
         ret, data = onenet_paresdata(res)
+        print('onenet_sendcmd:', ret, val)
         return ret
     return None
 
-# 查询最近10条数据
-def onenet_recvdata(con, deviceinfo):
+
+def getcurtime():
+    # 时间戳
+    now = time.time()
+    int(now)
+
+    # 时间
+    tl = time.localtime(now)
+
+    # 格式化时间
+    return time.strftime("%Y-%m-%d %H:%M:%S", tl)
+
+
+def getpreday(n):
+    # 时间戳
+    now = time.time()
+    int(now)
+
+    pre = now - n*24*3600
+
+    # 时间
+    tl = time.localtime(pre)
+
+    # 格式化时间
+    return time.strftime("%Y-%m-%d %H:%M:%S", tl)
+
+# 查询最近N条数据
+# {"start_time": 2015-01-10T08:00:35}
+# {"end_time": 2015-01-10T08:00:35}
+# {"limit": 1} # 0< limit <=6000>
+def onenet_recvdata(con, deviceinfo, parm=None):
+    if deviceinfo["online"]:
         # res3 = con.datapoint_multi_get(device_id = deviceinfo["id"], limit = 1, datastream_ids = deviceinfo["datastreams"][0]["id"])
-        res3 = con.datapoint_multi_get(device_id=deviceinfo["id"], limit=10,
-                                       datastream_ids='3308_0_5750')
+        if parm == None:
+            res3 = con.datapoint_multi_get(device_id=deviceinfo["id"],
+                                           limit=10,
+                                           datastream_ids='3308_0_5750')
+        elif "start_time" in parm and "end_time" in parm and "limit" in parm:
+            res3 = con.datapoint_multi_get(device_id=deviceinfo["id"],
+                                           start_time=parm["start_time"],
+                                           end_time=parm["end_time"],
+                                           limit=parm["limit"],
+                                           datastream_ids='3308_0_5750')
+        elif "start_time" in parm and  "end_time":
+            res3 = con.datapoint_multi_get(device_id=deviceinfo["id"],
+                                           start_time=parm["start_time"],
+                                           end_time=parm["end_time"],
+                                           datastream_ids='3308_0_5750')
+        elif "limit" in parm:
+            res3 = con.datapoint_multi_get(device_id=deviceinfo["id"],
+                                           limit=parm["limit"],
+                                           datastream_ids='3328_0_5750') # TODO 20200108
+
         count, recvtime, jsonstr = onenet_contjson(res3.content)
         return count, jsonstr
+    else:
+        print('设备不在线')
+        return 0, ''
 
 
 def connectonenet(con, rlist, devlist, nl):

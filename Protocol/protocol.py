@@ -75,7 +75,7 @@ def prtl2Make(prtl, frame):
 
 def prtlDealFrame(type, data, senddata, answer):
     if type == PRTL_LYJSON:
-        return jsonframe.JsonDealFrame(data, senddata, answer)
+        return  -1, None # TODO 2021-1-7 # jsonframe.JsonDealFrame(data, senddata, answer)
     else:
         return  -1, None
 
