@@ -145,9 +145,9 @@ class simSerial(threading.Thread):
 
     # 读数据
     def DReadPort(self):
-        # global STRGLO
-        str = self.q.get()
-        STRGLO = ""  # 清空当次读取
+        str = ''
+        if not self.q.empty():
+            str = self.q.get()
         return str
 
 
