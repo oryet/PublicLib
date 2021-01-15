@@ -132,7 +132,7 @@ def getpreday(n):
 # {"start_time": 2015-01-10T08:00:35}
 # {"end_time": 2015-01-10T08:00:35}
 # {"limit": 1} # 0< limit <=6000>
-def onenet_recvdata(con, deviceinfo, parm=None):
+def onenet_recvdata(con, deviceinfo, parm=None, data=None):
     if deviceinfo["online"]:
         # res3 = con.datapoint_multi_get(device_id = deviceinfo["id"], limit = 1, datastream_ids = deviceinfo["datastreams"][0]["id"])
         if parm == None:
@@ -156,6 +156,8 @@ def onenet_recvdata(con, deviceinfo, parm=None):
                                            datastream_ids='3328_0_5750') # TODO 20200108
 
         count, recvtime, jsonstr = onenet_contjson(res3.content)
+        if data != None:
+            data['recvtime'] = recvtime
         return count, jsonstr
     else:
         print('设备不在线')
