@@ -52,7 +52,7 @@ def upgradeDataProc_DL645(recv, uplist):
             upgradeRecvDataToMap(strData, uplist)
 
 
-
+'''
 def upgradeRecvProc(self):
     while 1:
         time.sleep(1)
@@ -65,6 +65,7 @@ def upgradeRecvProc(self):
                 upgradeDataProc_DL645(recv['HexStr'], self.uplist)
             else:
                 pass
+'''
 
 def upgradeGetCurPackNum(uplist):
     for i in range(len(uplist["bmap"])):
