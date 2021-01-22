@@ -58,12 +58,14 @@ class simSerial(threading.Thread):
         # if not data:
         #     data = self.leTx.text()
         if _type == "hex":
-            data = [int(x, 16) for x in data.replace('0x', '').split()]  # split 分隔符切片
+            sendData = [int(x, 16) for x in data.replace('0x', '').split()]  # split 分隔符切片
         else:
-            data = bytes(data, 'utf-8')
+            if not isinstance(data, str):
+                data = str(data)
+            sendData = bytes(data, 'utf-8')
 
 
-        return self.DWritePort(ser, data)
+        return self.DWritePort(ser, sendData)
 
     '''
     def ReadData(self, ser):
@@ -150,14 +152,57 @@ class simSerial(threading.Thread):
             str = self.q.get()
         return str
 
+class MtrUartTest():
+    def frameaddspace(self, frame):
+        # 字节间增加空格
+        framespace = ''
+        for i in range(0, len(frame), 2):
+            framespace += frame[i:i + 2] + ' '
+        return framespace
+
+    def uart_test(self, cfg, keepalive, n):
+        ss = simSerial()
+        ret, ser = ss.DOpenPort(cfg['port'], cfg['baud'],cfg['timeout'],'hex')
+        while ret:
+            keepalive[n] = 0
+            time.sleep(0.01)
+            str = ss.DReadPort()  # 读串口数据
+            if len(str) > 0:
+                print(cfg['port'], str)
+                s = self.frameaddspace(str)
+                ss.onSendData(ser, s, 'hex')
+
 
 if __name__ == '__main__':
-    from PublicLib.public import *
     ss = simSerial()
+    threadNum = 5
 
-    cfg = {'port':'COM1', 'baud':'2400',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
-    ret, ser = ss.DOpenPort(cfg['port'], cfg['baud'],cfg['timeout'],'hex')
-    while ret:
-        str = ss.DReadPort()  # 读串口数据
-        s = frameaddspace(str)
-        ss.onSendData(ser, s, 'hex')
+    cfg1 = {'port':'COM40', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+    cfg2 = {'port':'COM41', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+    cfg3 = {'port':'COM42', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+    cfg4 = {'port':'COM43', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+    cfg5 = {'port':'COM44', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+
+    keepAlive = [0]*threadNum
+
+
+    u1 = MtrUartTest()
+    u2 = MtrUartTest()
+    u3 = MtrUartTest()
+    u4 = MtrUartTest()
+    u5 = MtrUartTest()
+
+    threading.Thread(target=u1.uart_test, args=(cfg1,keepAlive, 0,)).start()
+    threading.Thread(target=u2.uart_test, args=(cfg2,keepAlive, 1,)).start()
+    threading.Thread(target=u3.uart_test, args=(cfg3,keepAlive, 2,)).start()
+    threading.Thread(target=u4.uart_test, args=(cfg4,keepAlive, 3,)).start()
+    threading.Thread(target=u5.uart_test, args=(cfg5,keepAlive, 4,)).start()
+
+    while(1):
+        time.sleep(1)
+        for i in range(threadNum):
+            keepAlive[i] += 1
+        for i in range(threadNum):
+            if keepAlive[i] > 10:
+                print('error', keepAlive)
+                break

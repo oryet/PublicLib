@@ -105,11 +105,13 @@ def loggingConfig(logconf):
 
 
 # 载入Json格式配置文件
-def loadDefaultSettings(configfile):
+def loadDefaultSettings(configfile, encoding = 'cp936'):
     try:
         jsonConfigFile = open(configfile)
         defaultJsonConfig = json.load(jsonConfigFile)
-        print(defaultJsonConfig)
+    except:
+        print('json file error')
+        defaultJsonConfig = {'return':'error'}
     finally:
         if jsonConfigFile:
             jsonConfigFile.close()
