@@ -8,13 +8,13 @@ class simSerial(threading.Thread):
     def __init__(self):
         self.q = queue.Queue()
         self.beopen = False
-        self.dataType = 'Hex'
+        self.dataType = 'hex'
 
     def SetDataType(self, dataType):
-        if dataType == 'Hex':
-            self.dataType = 'Hex'
+        if dataType == 'hex':
+            self.dataType = 'hex'
         else:
-            self.dataType = 'Str'
+            self.dataType = 'str'
 
     def ByteToHex(self, bins):
         try:
@@ -58,7 +58,11 @@ class simSerial(threading.Thread):
         # if not data:
         #     data = self.leTx.text()
         if _type == "hex":
-            sendData = [int(x, 16) for x in data.replace('0x', '').split()]  # split 分隔符切片
+            try:
+                sendData = [int(x, 16) for x in data.replace('0x', '').split()]  # split 分隔符切片
+            except:
+                print('error', data)
+                return
         else:
             if not isinstance(data, str):
                 data = str(data)
@@ -122,7 +126,7 @@ class simSerial(threading.Thread):
             # 判断是否打开成功
             if ser.is_open:
                 ret = True
-                bytetimeout = 8*20 / int(bps, 10)
+                bytetimeout = 10*10 / int(bps, 10)
                 threading.Thread(target=self.ReadDatas, args=(ser, bytetimeout, _type)).start()
                 self.beopen = True
                 return ret, ser
@@ -175,9 +179,11 @@ class MtrUartTest():
 
 if __name__ == '__main__':
     ss = simSerial()
-    threadNum = 5
 
-    cfg1 = {'port':'COM40', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
+
+
+    threadNum = 1
+    cfg1 = {'port':'COM5', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
     cfg2 = {'port':'COM41', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
     cfg3 = {'port':'COM42', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
     cfg4 = {'port':'COM43', 'baud':'9600',"parity": "Even", "bytesize":8, "stopbits":1,"timeout": 1}
