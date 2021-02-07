@@ -8,7 +8,7 @@ g_cnt = 0
 
 def subStrToJson(data):
     if data == None:
-        return None
+        return False, None
     # 原因在于：字符串里用单引号来标识字符
     data = re.sub('\'', '\"', data)
     data = re.sub('\n', '', data)
@@ -17,65 +17,82 @@ def subStrToJson(data):
     try:
         data_json = json.loads(data)
         if not IsJsonFrame(data_json):
-            return None
+            return False, 'Error_Json'
     except:
         print(data)
-        return None
+        return False, data
     # addr = data_json['DataValue']['04A20208']
     # print(addr)
-    return data_json
+    return True, data_json
 
 
-def IsJsonFrame(data):
-    if data == None:
+# 自定义 json 格式判断
+def IsJsonFrame(dictdata):
+    if dictdata is None:
         return False
 
-    if data['Len']:
-        if (data['Cmd']):
-            if (data['SN']):
-                if (data['DataTime']):
-                    if (data['CRC']):
-                        if (data['DataValue']):
-                            return  True
-    return False
+    if isinstance(dictdata, dict) is False:
+        return False
+
+    dictlist = ['Len', 'Cmd', 'SN', 'DataTime', 'CRC', 'DataValue']
+    for k in dictlist:
+        if k not in dictdata:
+            return False
+    return True
 
 
-def JsonParse(data):
-    if (data['Len']):
-        if (data['Cmd']):
-            if (data['SN']):
-                if (data['DataTime']):
-                    if (data['CRC']):
-                        if (data['DataValue']):
-                            return [data['DataValue']]
-    return [False]
-
-
+# dict recv, dict send
+# dict expect answer
+#      answer
+#      answer result
+#  int threshold
 def JsonDealFrame(recvframe, senddata, answer):
-    json_frame = recvframe  # subStrToJson(recvframe)
-    json_senddata = senddata  # subStrToJson(senddata)
-
-    if isinstance(json_frame, dict) is False:
-        return -1, None
-    if isinstance(json_senddata, dict) is False:
-        return -1, None
+    answer['answerresult'] = {}
+    if not IsJsonFrame(recvframe) or not IsJsonFrame(senddata):
+        answer['result'] = 'frame error'
+        return
 
     # 接收帧 去除头部结构
-    if "recvData" in json_frame:
-        json_frame = json_frame["recvData"]
+    if "recvData" in recvframe:
+        recvframe = recvframe["recvData"]
 
-    if json_frame is not None and json_senddata is not None:
-        if isinstance(json_frame, str):
-            json_frame = json.loads(json_frame)
-        if isinstance(json_senddata, str):
-            json_senddata = json.loads(json_senddata)
+    #  帧序号相同
+    if recvframe['SN'] != senddata['SN']:
+        answer['result'] = 'sn error'
+        return
 
-        if json_senddata["Cmd"] == json_frame["Cmd"]:
-            if json_senddata["DataValue"].keys() == json_frame["DataValue"].keys():
-                value = list(json_frame["DataValue"].values())[0]
-                if value == answer:
-                    return 1, value
-    return -1, None
+    # 控制字相同
+    if recvframe['Cmd'] != senddata['Cmd']:
+        answer['result'] = 'cmd error'
+        return
+
+    # 预估返回值相同
+    threshold = answer['threshold']
+    answer['answer'] = recvframe['DataValue'].copy()
+    answer['answerresult'] = recvframe['DataValue'].copy()
+
+    for i, j in recvframe['DataValue'].items():
+        if i in answer['expectanswer']:
+            # threshold 判断：
+            # 0： 绝对相等
+            # 1： 门限内相等
+            # -1： 不判断
+            if threshold == 0:
+                if answer['expectanswer'][i] == j:
+                    answer['answerresult'][i] = 'ok'
+                else:
+                    answer['answerresult'][i] = 'error'
+            elif threshold == -1:
+                answer['answerresult'][i] = 'ok'
+            else:
+                recvvalue = float(j)
+                answervalue = float(answer['expectanswer'][i])
+                if answervalue * (1 - threshold) <= recvvalue <= answervalue * (1 + threshold):
+                    answer['answerresult'][i] = 'ok'
+                else:
+                    answer['answerresult'][i] = 'error'
+
+    return
 
 
 # parm
@@ -87,17 +104,19 @@ def JsonMakeFrame(parm):
     if g_cnt > 9999:
         g_cnt = 0
 
-    datatime = time.strftime("%y%m%d%H%M%S", time.localtime())
-    data = dict(Len="312", Cmd=parm["Cmd"], SN=str(g_cnt), DataTime=datatime, CRC="FFFF", DataValue=parm["DataValue"])
+    if "Cmd" in parm and "DataValue" in parm:
+        datatime = time.strftime("%y%m%d%H%M%S", time.localtime())
+        data = dict(Len="312", Cmd=parm["Cmd"], SN=str(g_cnt), DataTime=datatime, CRC="FFFF", DataValue=parm["DataValue"])
 
-    # 计算CRC
-    # dv = '\'DataValue\'' + ':' + str(parm["DataValue"]).replace(' ', '')
-    dv = str(parm["DataValue"]).replace(' ', '')
-    dv = "0000" + pfun.crc16str(0, dv [1:-1], False)
-    data["CRC"] = dv[-4:]
+        # 计算CRC
+        dv = str(parm["DataValue"]).replace(' ', '')
+        dv = "0000" + pfun.crc16str(0, dv[1:-1], False)
+        data["CRC"] = dv[-4:]
 
-    # 计算长度
-    data["Len"] = str(len(str(data)) - 12)
+        # 计算长度
+        data["Len"] = str(len(str(data)) - 12)
+    else:
+        data = dict(frame = 'error')
 
     # 将python对象data转换json对象
     data_json = json.dumps(data, ensure_ascii=False)
@@ -137,7 +156,23 @@ if __name__ == '__main__':
 
     # 字符串 转 json
     data = json.loads(data_python)
-    JsonDealFrame(data_python, data, "000000.00")
+    ret = IsJsonFrame(data)
+    print(ret)
+    if ret:
+        # dict expect answer
+        #      answer
+        #      answer result
+        #  int threshold
+        dictanswer = {'threshold': 0.1, 'expectanswer': List}
+        JsonDealFrame(data, data, dictanswer)
+        for k in dictanswer:
+            print(dictanswer[k])
+
+        List['05060102'] = '199.29'
+        dictanswer = {'threshold': 0.1, 'expectanswer': List}
+        JsonDealFrame(data, data, dictanswer)
+        for k in dictanswer:
+            print(dictanswer[k])
 
     # a = JsonParse(data)
     '''

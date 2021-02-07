@@ -2,6 +2,7 @@ import json
 import logging
 import logging.config
 import configparser
+import os
 
 # CRC16/IBM x16 + x15 + x2 + 1
 def crc16str(base, x, invert):
@@ -79,7 +80,10 @@ def HexToByte( hexStr ):
 def calcCheckSum(frame):
     checkSum = 0
     for i in range(0, len(frame), 2):
-        checkSum += int(frame[i:i + 2], 16)
+        try:
+            checkSum += int(frame[i:i + 2], 16)
+        except:
+            print('error', __file__, frame, i)
     return str(hex(checkSum))[-2:]
 
 
@@ -101,11 +105,13 @@ def loggingConfig(logconf):
 
 
 # 载入Json格式配置文件
-def loadDefaultSettings(configfile):
+def loadDefaultSettings(configfile, encoding = 'cp936'):
     try:
         jsonConfigFile = open(configfile)
         defaultJsonConfig = json.load(jsonConfigFile)
-        print(defaultJsonConfig)
+    except:
+        print('json file error')
+        defaultJsonConfig = {'return':'error'}
     finally:
         if jsonConfigFile:
             jsonConfigFile.close()
@@ -128,6 +134,15 @@ def frameaddspace(frame):
         framespace += frame[i:i + 2] + ' '
     return framespace
 
+def mkdir(path):
+    path = path.strip()
+    path = path.rstrip('\\')
+    isExists = os.path.exists(path)
+    if not isExists:
+        os.makedirs(path, 511)
+        print(path + '目录创建成功')
+        return True
+    return False
 
 
 if __name__ == '__main__':

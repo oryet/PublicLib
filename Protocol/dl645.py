@@ -40,13 +40,22 @@ def deal645Frame(frame):
                     return l
     return l
 
+# str '11223344' => str '44556677'
+def Dl645DataAdd33(data):
+    n = len(data)
+    strdatalist = ''
+    for i in range(0, n, 2):
+        hexdata = int(data[i:i+2], 16)
+        hexdata += 0x33
+        strdata = hex(hexdata).replace('0x', '00')[-2:]
+        strdatalist += strdata
+    return strdatalist
+
 
 # 645组帧函数
-def make645Frame(head, addr, ctrl, data, mode):
+def make645Frame(head, addr, ctrl, data):
     frame = '68' + addr + '68' + ctrl
-    datalen = str(hex(len(data) // 2))
-    if len(datalen) < 4:
-        datalen = '0' + datalen[-1]
+    datalen = hex(len(data)//2).replace('0x','0000')[-2:]
     frame += datalen
     frame += data
     checkSum = calcCheckSum(frame)

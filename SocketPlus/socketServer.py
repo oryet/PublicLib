@@ -19,8 +19,8 @@ class Myserver(socketserver.BaseRequestHandler):
     def frametype(self, ret_bytes):
         try:
             ret_str = str(ret_bytes, encoding="utf-8")  # byte 转 字符串(utf8)
-            ret_json = subStrToJson(ret_str)
-            if ret_json:
+            ret, ret_json = subStrToJson(ret_str)
+            if ret:
                 self.serverClass["type"] = "json"
             else:
                 self.serverClass["type"] = "str" # str 与 hex 判读可能存在误差，部分hex帧因为utf8可以解析，被误认为是str

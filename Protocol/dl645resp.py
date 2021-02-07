@@ -23,8 +23,9 @@ MIN_LEN_645FRAME = 24  # 12
 
 HEAD_FRAME = 'FEFEFEFE'
 
-
-def dl645_dealframe(frame):
+# resp:True  被动设备，只响应抄读帧，并进行应答
+# resp:False 主动设备，解析设备的响应帧
+def dl645_dealframe(frame, resp=True):
     frame = frame.replace(' ', '')
     if len(frame) < MIN_LEN_645FRAME:
         return False, None
@@ -46,9 +47,14 @@ def dl645_dealframe(frame):
                     dt['ctrl'] = int(frame[i + POS_64507_CTRL:i + POS_64507_CTRL + 2], 16)
                     # dt['data'] = frame[i + POS_64507_DATA:i + POS_64507_DATA + dataLen]
                     datastr = frame[i + POS_64507_DATA:i + POS_64507_DATA + dataLen]
-                    dt['data'] = fat.str2hex(datastr, 1)
+                    if resp:
+                        dt['data'] = fat.str2hex(datastr, 1)
+                    else:
+                        dt['data'] = datastr
 
-                    if dt['ctrl'] & 0x80 == 0:  # 只响应抄读帧
+                    if resp and dt['ctrl'] & 0x80 == 0:  # 只响应抄读帧
+                        return True, dt
+                    elif resp is False and dt['ctrl'] & 0x80 == 0x80:
                         return True, dt
     return False, None
 
