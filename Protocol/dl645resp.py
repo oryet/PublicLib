@@ -117,7 +117,11 @@ def dl645_read(dt, mtr, index, mmtr=None):
             fzday = mtr.readhismon(index, DI[3])
         dt['datavalue'] = rdfrz.dl645_readfremonth(DI, fzday, pn)
     elif DI[0] == 0x01:
-        dt['datavalue'] = rddemand.dl645_readdemand()
+        if mmtr:
+            demand = mmtr.readdemand(mtr, index)
+        else:
+            demand = mtr.readdemand(index)
+        dt['datavalue'] = rddemand.dl645_readdemandtime(DI, demand, pn)
     elif DI[0] == 0x02 and DI[1] == 0x80:
         if mmtr:
             demand = mmtr.readdemand(mtr, index)
