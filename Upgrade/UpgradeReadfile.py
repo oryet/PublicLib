@@ -26,6 +26,7 @@ class UpgradeReadfile():
             return
 
         try:
+            i = 0
             while 1:
                 c = fo.read(readlen)
                 if not c:
@@ -37,6 +38,8 @@ class UpgradeReadfile():
                     self.flist += [strsend]
                     self.flen += len(c)
                     self.fcrc = pfun.crc16hex(int(self.fcrc, 16), strsend, False)
+                    i += 1
+                    print('crc %s is %s%s' % (i, self.fcrc[2:], self.fcrc[:2]))
         finally:
             fo.close()
             self.fcrc = self.fcrc[2:] + self.fcrc[:2]
