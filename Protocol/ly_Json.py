@@ -66,7 +66,6 @@ def JsonDealFrame(recvframe, senddata, answer):
         answer['result'] = 'cmd error'
         return
 
-    '''
     # 预估返回值相同
     threshold = answer['threshold']
     answer['answer'] = recvframe['DataValue'].copy()
@@ -92,7 +91,7 @@ def JsonDealFrame(recvframe, senddata, answer):
                     answer['answerresult'][i] = 'ok'
                 else:
                     answer['answerresult'][i] = 'error'
-    '''
+
     return
 
 
@@ -134,13 +133,12 @@ def JsonMakeValue(DIlist):
         Value =
 '''
 
-def testMakeFrame():
+if __name__ == '__main__':
     # 数据项和内容
     # DIList = ['05060101', '05060102', '05060103']
     # ValueList = ['000000.00', '123.14', '778899']
     DIList = ['04A00501']
-    ValueList = [
-        '594C#03#03BC#0001#0001CA910001CA5D0001C9F50001EAE30001BCC50001BC810001BCA10001C9CD0001C9A50001C97D0001AF130001C9550001C92D0001E8D30001C92B0001D4AB0000973D00006DC300000000000000000001E8C7000000000000000000000000000000000000000000000000000000000001C9290001CC670001F1F1200009A8']
+    ValueList = ['594C#03#03BC#0001#0001CA910001CA5D0001C9F50001EAE30001BCC50001BC810001BCA10001C9CD0001C9A50001C97D0001AF130001C9550001C92D0001E8D30001C92B0001D4AB0000973D00006DC300000000000000000001E8C7000000000000000000000000000000000000000000000000000000000001C9290001CC670001F1F1200009A8']
     List = dict(zip(DIList, ValueList))
 
     MakeFramePara = {}
@@ -160,7 +158,6 @@ def testMakeFrame():
     data = json.loads(data_python)
     ret = IsJsonFrame(data)
     print(ret)
-    '''
     if ret:
         # dict expect answer
         #      answer
@@ -177,7 +174,8 @@ def testMakeFrame():
         for k in dictanswer:
             print(dictanswer[k])
 
-    a = JsonParse(data)
+    # a = JsonParse(data)
+    '''
     for key in a:
         print(key)
     # print(a.key())
@@ -186,7 +184,3 @@ def testMakeFrame():
     for value in a.values():
         print(value)
     '''
-
-if __name__ == '__main__':
-    testMakeFrame()
-
