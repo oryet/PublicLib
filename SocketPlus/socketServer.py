@@ -39,7 +39,7 @@ class Myserver(socketserver.BaseRequestHandler):
         # 加入连接池
         con.Insert(conn, self.client_address[0], self.client_address[1], MAX_LIVE_TIME)
         print("link ip:", str(self.client_address[0]), "port:", str(self.client_address[1]))
-        p = prtl3761()
+        p3761 = prtl3761()
         sapp = SocketApp()
 
         while True:
@@ -62,7 +62,7 @@ class Myserver(socketserver.BaseRequestHandler):
                     if self.serverClass["type"] == "json":
                         socket_json(ret_str, conn)
                     elif self.serverClass["type"] == "hex":
-                        socket3761(ret_str, p, conn)
+                        socket3761(ret_str, p3761, conn)
                     elif self.serverClass["type"] == "str":
                         sapp.socketMsgHandle(con, conn, self.serverClass)
 

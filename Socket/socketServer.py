@@ -4,6 +4,7 @@ import time
 from PublicLib.Socket.ConnManage import ConnManage
 from PublicLib.Protocol.prtl13761 import prtl3761
 from PublicLib.MySqldb.Frame2Json import *
+from PublicLib.Protocol.dl698 import *
 
 
 q = queue.Queue()
@@ -20,7 +21,7 @@ class Myserver(socketserver.BaseRequestHandler):
         # 加入连接池
         con.Insert(conn, self.client_address[0], self.client_address[1], MAX_LIVE_TIME)
         # print("link ip:", str(self.client_address[0]), "port:", str(self.client_address[1]))
-        p = prtl3761()
+        p3761 = prtl3761()
 
         while True:
             time.sleep(0.1)
@@ -49,9 +50,16 @@ class Myserver(socketserver.BaseRequestHandler):
                         if 'Login' in ret_str or 'Heart' in ret_str or 'Event' in ret_str:
                             conn.sendall(bytes(ret_str+" ",encoding="utf-8"))
                     elif self.serverClass["type"] == "hex":
-                        ret_str = p.LoginHeartFrame(ret_str)
-                        if ret_str is not None:
-                            conn.sendall(bytes.fromhex(ret_str))
+                        rtn = p3761.LoginHeartFrame(ret_str)
+                        if rtn is not None:
+                            print(rtn)
+                            conn.sendall(bytes.fromhex(rtn))
+                            continue
+                        rtn = DL698_LoginHeartFrame(ret_str)
+                        if rtn is not None:
+                            print(rtn)
+                            conn.sendall(bytes.fromhex(rtn))
+                            continue
                 elif len(ret_str) == 0:
                     self.remove()
                     break
@@ -71,7 +79,8 @@ def SocketSend(n, data):
         if n < con.GetLinkNum():
             conn = con.GetConn(n)
             try:
-                conn.sendall(bytes(data + " ", encoding="utf-8"))
+                # conn.sendall(bytes(data + " ", encoding="utf-8"))
+                conn.sendall(bytes.fromhex(data))
             except:
                 pass
 
