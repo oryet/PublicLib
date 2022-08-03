@@ -81,8 +81,10 @@ def SocketSend(n, data):
             try:
                 # conn.sendall(bytes(data + " ", encoding="utf-8"))
                 conn.sendall(bytes.fromhex(data))
+                return 0
             except:
                 pass
+    return -1
 
 def ServerMonitor(qRecv, logger):
     while True:
