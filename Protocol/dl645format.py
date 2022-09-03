@@ -209,6 +209,20 @@ def dl645_xx2hex(e, s=0, t=BCD):
     strhex = pfun._strReverse(strhex)
     return strhex
 
+def dl645_xxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-3:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1)))
+        strhex = strhex[-4:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
 
 def dl645_xxxxxxxx2hex(e, s=0, t=BCD):
     if s == 1 and e < 0:  # 有符号
