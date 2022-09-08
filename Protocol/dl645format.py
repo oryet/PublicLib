@@ -181,7 +181,7 @@ def dl645_xxxx_xxxx2hex(e, s=0, t=BCD):
 def dl645_xx_xxxxxx2hex(e, s=0, t=BCD):
     if s == 1 and e < 0:  # 有符号
         strhex = '00000000' + str(int(e * -1e6))
-        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        s = str(int(strhex[-8], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
         strhex = s + strhex[-7:]
     else:
         if t == HEX:
