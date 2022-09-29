@@ -1,5 +1,9 @@
 import PublicLib.public as pfun
 
+BCD = 0
+HEX = 1
+
+
 # en -33
 def str2hex(strdata, en=0):
     data = []
@@ -46,58 +50,203 @@ def hex2str(hexdata, en=0):
 
 
 # xxxxxx.xx 转 645
-def dl645_xxxxxx_xx2hex(e):
-    strhex = '00000000' + str((int(e * 100)))
-    strhex = strhex[-8:]
-    strhex = pfun._strReverse(strhex)
-    return strhex
-
-
-def dl645_xxx_x2hex(e):
-    strhex = '00000000' + str((int(e * 10)))
-    strhex = strhex[-4:]
-    strhex = pfun._strReverse(strhex)
-    return strhex
-
-
-def dl645_xxx_xxx2hex(e, s=0):
+def dl645_xxxxxx_xx2hex(e, s=0, t=BCD):
     if s == 1 and e < 0:  # 有符号
-        strhex = '00000000' + str(int(e * -1000))
-        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
-        strhex = s + strhex[-5:]
+        strhex = '00000000' + str((int(e * 100)))
+        s = str(int(strhex[-8], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-7:]
     else:
-        strhex = '00000000' + str((int(e * 1000)))
-        strhex = strhex[-6:]
+        if t == HEX:
+            strhex = hex(int(e * 100))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str(int(e * 100))
+        strhex = strhex[-8:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
 
-def dl645_xx_xxxx2hex(e, s=0):
+def dl645_xxx_x2hex(e, s=0, t=BCD):
     if s == 1 and e < 0:  # 有符号
-        strhex = '00000000' + str(int(e * -10000))
-        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
-        strhex = s + strhex[-5:]
-    else:
-        strhex = '00000000' + str(int(e * 10000))
-        strhex = strhex[-6:]
-    strhex = pfun._strReverse(strhex)
-    return strhex
-
-
-def dl645_x_xxx2hex(e, s=0):
-    if s == 1 and e < 0:  # 有符号
-        strhex = '00000000' + str(int(e * -1000))
+        strhex = '00000000' + str((int(e * 10)))
         s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
         strhex = s + strhex[-3:]
     else:
-        strhex = '00000000' + str((int(e * 1000)))
+        if t == HEX:
+            strhex = hex(int(e * 10))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str(int(e * 10))
         strhex = strhex[-4:]
     strhex = pfun._strReverse(strhex)
     return strhex
 
 
-def dl645_xxx_x2hex(e):
-    strhex = '00000000' + str((int(e * 10)))
-    strhex = strhex[-4:]
+def dl645_xxx_xxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1000))
+        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-5:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1000))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1000)))
+        strhex = strhex[-6:]
     strhex = pfun._strReverse(strhex)
     return strhex
+
+
+def dl645_xx_xxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -10000))
+        s = str(int(strhex[-6], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-5:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 10000))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str(int(e * 10000))
+        strhex = strhex[-6:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_x_xxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1000))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-3:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1000))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1000)))
+        strhex = strhex[-4:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_xx_xx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -100))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-3:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 100))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 100)))
+        strhex = strhex[-4:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_xxxxxxx_x2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -10))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-7:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 10))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 10)))
+        strhex = strhex[-8:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_xxxx_xxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1e4))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-7:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1e4))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1e4)))
+        strhex = strhex[-8:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_xx_xxxxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1e6))
+        s = str(int(strhex[-8], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-7:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1e6))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1e6)))
+        strhex = strhex[-8:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_xx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1))
+        s = str(int(strhex[-2], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-1:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1)))
+        strhex = strhex[-2:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+def dl645_xxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1))
+        s = str(int(strhex[-4], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-3:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1)))
+        strhex = strhex[-4:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+def dl645_xxxxxxxx2hex(e, s=0, t=BCD):
+    if s == 1 and e < 0:  # 有符号
+        strhex = '00000000' + str(int(e * -1))
+        s = str(int(strhex[-8], 10) | 0x8)  # 最高字节 | 0x80 表示符号位
+        strhex = s + strhex[-7:]
+    else:
+        if t == HEX:
+            strhex = hex(int(e * 1))
+            strhex = strhex.replace('0x', '00000000')
+        else:
+            strhex = '00000000' + str((int(e * 1)))
+        strhex = strhex[-8:]
+    strhex = pfun._strReverse(strhex)
+    return strhex
+
+
+def dl645_str2nxx(s, n):
+    slen = int(len(s) / 2 / n)  # 字符串两字节, 数据4字节
+    dl = []
+    j = 0
+    for i in range(slen):
+        d = s[j:j + 2 * n]
+        d = pfun._strReverse(d)
+        dl += [d]
+        j += 2 * n
+    return dl

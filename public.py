@@ -117,6 +117,12 @@ def loadDefaultSettings(configfile, encoding = 'cp936'):
             jsonConfigFile.close()
             return defaultJsonConfig
 
+def saveJsonSettings(configfile, dt):
+    b = json.dumps(dt)
+    jsonConfigFile = open(configfile, 'w')
+    jsonConfigFile.write(b)
+    jsonConfigFile.close()
+
 
 def loadIniSettings(configfile):
     try:
